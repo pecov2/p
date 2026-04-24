@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <title>周辺情報｜PORONI</title>
+    
+    <!-- OGP / Twitter Card -->
+    <meta property="og:title" content="周辺情報｜PORONI">
+    <meta property="og:description" content="PORONI周辺の観光スポットをご案内いたします。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://poroni-kakogawa.com/area-info.html">
+    <meta property="og:image" content="https://poroni-kakogawa.com/images/ogp-image.jpg">
+    <meta property="og:site_name" content="PORONI">
+    <meta property="og:locale" content="ja_JP">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="周辺情報｜PORONI">
+    <meta name="twitter:description" content="PORONI周辺の観光スポットをご案内いたします。">
+    <meta name="twitter:image" content="https://poroni-kakogawa.com/images/ogp-image.jpg">
+    
+    <!-- その他のメタタグ -->
+    <meta name="description" content="PORONI周辺の観光スポットをご案内いたします。">
+    <meta name="keywords" content="イタリアン,レストラン,加古川,兵庫,周辺情報,観光,アクセス,PORONI">
+    
+    <link rel="stylesheet" href="styles.css?v=1.0.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+      :root{
+        --bg:#f8f7f4;          /* 背景（温かみのあるオフホワイト） */
+        --card:#ffffff;        /* セクション背景 */
+        --text:#2c2c2c;        /* 主要テキスト */
+        --muted:#666666;       /* 補助テキスト */
+        --accent:#8b4513;      /* 強調（ブラウン） */
+        --ok:#8b4513;          /* ○ 予約可（ブラウン） */
+        --ng:#d4c4b7;         /* △ 定休日（ベージュ） */
+        --warn:#8b4513;        /* 注意喚起（ブラウン） */
+        --danger:#8b4513;      /* キャンセル料など（ブラウン） */
+        --border:#e5e5e5;      /* 罫線 */
+        --radius:16px;
+        --shadow:0 4px 20px rgba(0,0,0,.08);
+      }
+      
+      /* メインコンテナの調整 */
+      main { padding-top: 0; }
+      
+      .area-info-container{ max-width:1000px; margin:0 auto; padding:32px 20px 64px; }
+      
+      .area-info-header{ margin-bottom:24px; text-align:center; }
+      .area-info-header h1{ font-size:clamp(28px,4vw,36px); margin:0 0 8px; letter-spacing:.1em; color:var(--accent); font-weight:700; }
+      .area-info-header p{ margin:0; color:var(--muted); font-size:1.1rem; }
+
+      .area-info-section{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:32px; margin:24px 0; }
+      .area-info-section h2{ font-size:clamp(22px,3vw,28px); margin:0 0 20px; letter-spacing:.1em; color:var(--accent); font-weight:600; text-align:center; position:relative; }
+      .area-info-section h2::after{ content:''; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%); width:60px; height:2px; background:var(--accent); }
+      .area-info-section h3{ font-size:clamp(18px,2.5vw,22px); margin:24px 0 12px; color:var(--accent); font-weight:600; }
+
+      /* 観光スポットグリッド */
+      .spots-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:24px; margin:20px 0; }
+      .spot-card{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; transition:all 0.3s ease; }
+      .spot-card:hover{ transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,.1); }
+      .spot-card h4{ font-size:1.1rem; margin:0 0 8px; color:var(--accent); font-weight:600; }
+      .spot-card p{ margin:0 0 8px; color:var(--text); font-size:0.9rem; line-height:1.6; }
+      .spot-card .distance{ color:var(--muted); font-size:0.8rem; }
+
+      /* アクセス情報 */
+      .access-info{ margin:20px 0; }
+      .access-item{ display:flex; align-items:center; gap:12px; margin:12px 0; padding:12px; background:rgba(139,69,19,.05); border-radius:8px; }
+      .access-item i{ color:var(--accent); font-size:1.2rem; }
+      .access-item .info{ flex:1; }
+      .access-item h4{ margin:0 0 4px; color:var(--accent); font-size:1rem; }
+      .access-item p{ margin:0; color:var(--text); font-size:0.9rem; }
+
+      /* 駐車場情報 */
+      .parking-info{ background:linear-gradient(180deg,rgba(139,69,19,.06),rgba(139,69,19,.03)); border:1px solid var(--border); border-radius:12px; padding:20px; margin:20px 0; }
+      .parking-info h3{ margin:0 0 12px; color:var(--accent); }
+      .parking-info ul{ margin:0; padding-left:20px; }
+      .parking-info li{ margin:8px 0; color:var(--text); }
+
+      .area-info-footer{ margin-top:40px; color:var(--muted); font-size:.95rem; text-align:center; padding:24px 0; border-top:1px solid var(--border); }
+      
+      /* ナビゲーション */
+      .nav-back{ display:inline-flex; align-items:center; gap:8px; color:var(--accent); text-decoration:none; font-weight:600; margin-bottom:24px; padding:8px 16px; border:1px solid var(--accent); border-radius:999px; transition:all 0.2s; }
+      .nav-back:hover{ background:var(--accent); color:white; }
+
+      /* ページ遷移アニメーション */
+      .page-transition-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--accent);
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.4s ease-in-out;
+      }
+
+      .page-transition-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .page-transition-overlay::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top: 3px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+
+      /* ページロード時のフェードイン */
+      body {
+        opacity: 0;
+        animation: fadeIn 0.6s ease-in-out forwards;
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
+</head>
+<body class="day site-loading" data-lang="ja">
+    <div class="page-loader" aria-hidden="true">
+        <img src="images/logo.png" alt="">
+    </div>
+    <!-- ページ遷移オーバーレイ -->
+    <div class="page-transition-overlay"></div>
+    
+    <a href="#" class="back-to-top" aria-label="ページの先頭に戻る" aria-label-ja="ページの先頭に戻る" aria-label-en="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+            <header>
+                <nav>
+                    <a href="index.html" class="logo">PORONI</a>
+                    <div class="language-switch">
+                        <button class="lang-btn active" data-lang="ja">JA</button>
+                        <button class="lang-btn" data-lang="en">EN</button>
+                    </div>
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <ul class="nav-links">
+                        <li><a href="index.html#menu" data-ja="メニュー" data-en="MENU">メニュー</a></li>
+                        <li><a href="index.html#news" data-ja="お知らせ" data-en="NEWS">お知らせ</a></li>
+                        <li><a href="reservation.html" data-ja="ご予約" data-en="RESERVATION">ご予約</a></li>
+                        <li><a href="area-info.html" data-ja="周辺情報" data-en="AREA INFO">周辺情報</a></li>
+                        <li><a href="index.html#access" data-ja="アクセス" data-en="ACCESS">アクセス</a></li>
+                    </ul>
+                </nav>
+            </header>
+
+    <main>
+        <div class="area-info-container">
+            <div class="area-info-header" style="margin-top: 80px;">
+                <h1 data-ja="周辺情報" data-en="AREA INFORMATION">周辺情報</h1>
+                <p class="muted" data-ja="PORONI周辺の観光スポットをご案内いたします。" data-en="We provide information about tourist spots around PORONI.">PORONI周辺の観光スポットをご案内いたします。</p>
+            </div>
+
+            <section class="area-info-section" aria-labelledby="spots-heading">
+                <h2 id="spots-heading" data-ja="近隣の見どころ" data-en="NEARBY ATTRACTIONS">近隣の見どころ</h2>
+                <p class="muted" data-ja="食前・食後の寄り道におすすめのスポットをご紹介します。" data-en="We introduce recommended spots for before or after dining.">食前・食後の寄り道におすすめのスポットをご紹介します。</p>
+                
+                <div class="spots-grid">
+                    <div class="spot-card">
+                        <h4 data-ja="平荘湖" data-en="Hirazou Lake">平荘湖</h4>
+                        <p data-ja="人工湖として造られた美しい湖で、四季折々の自然を楽しめます。バードウォッチングも人気で、水鳥や野鳥の観察ができます。" data-en="A beautiful artificial lake where you can enjoy nature throughout the four seasons. Popular for birdwatching, you can observe waterfowl and wild birds.">人工湖として造られた美しい湖で、四季折々の自然を楽しめます。バードウォッチングも人気で、水鳥や野鳥の観察ができます。</p>
+                    </div>
+                </div>
+                
+                <div class="parking-info" style="margin-top: 24px;">
+                    <h3 data-ja="加古川市内のその他の名所" data-en="Other Attractions in Kakogawa">加古川市内のその他の名所</h3>
+                    <p data-ja="より詳しい加古川市内の観光情報は、<a href='https://kako-navi.jp' target='_blank' rel='noopener noreferrer'>加古川ナビ</a>をご覧ください。鶴林寺や日岡山公園など、市街地の名所も多数ご紹介しています。" data-en="For more detailed tourist information in Kakogawa city, please visit <a href='https://kako-navi.jp' target='_blank' rel='noopener noreferrer'>Kakogawa Navi</a>. It introduces many attractions in the city area including Tsurumine Temple and Hiyokayama Park.">より詳しい加古川市内の観光情報は、<a href="https://kako-navi.jp" target="_blank" rel="noopener noreferrer">加古川ナビ</a>をご覧ください。鶴林寺や日岡山公園など、市街地の名所も多数ご紹介しています。</p>
+                </div>
+            </section>
+
+            <div class="footer-content">
+                <div class="footer-logo">PORONI</div>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/poroni_kakogawa/" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.facebook.com/poroni" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                </div>
+                <div class="footer-info">
+                    <p>〒675-1226</p>
+                    <p data-ja="兵庫県加古川市平荘町磐265-2" data-en="265-2 Hirazou-cho Iwai, Kakogawa-shi, Hyogo">兵庫県加古川市平荘町磐265-2</p>
+                    <p>079-451-5898</p>
+                </div>
+                <div class="footer-hours">
+                    <p data-ja="定休日: 毎週月火曜日" data-en="Closed: Every Monday & Tuesday">定休日: 毎週月火曜日</p>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 PORONI All Rights Reserved.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <a href="reservation.html" class="reservation-banner" data-ja="ご予約はこちら" data-en="MAKE RESERVATION">ご予約はこちら</a>
+
+    <script src="script.js?v=1.0.1"></script>
+</body>
+</html>

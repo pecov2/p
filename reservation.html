@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <title>ご予約・ご利用について｜PORONI</title>
+    
+    <!-- OGP / Twitter Card -->
+    <meta property="og:title" content="ご予約・ご利用について｜PORONI">
+    <meta property="og:description" content="PORONIのご予約状況、キャンセルポリシー、ご利用についての詳細をご確認いただけます。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://poroni-kakogawa.com/reservation.html">
+    <meta property="og:image" content="https://poroni-kakogawa.com/images/ogp-image.jpg">
+    <meta property="og:site_name" content="PORONI">
+    <meta property="og:locale" content="ja_JP">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ご予約・ご利用について｜PORONI">
+    <meta name="twitter:description" content="PORONIのご予約状況、キャンセルポリシー、ご利用についての詳細をご確認いただけます。">
+    <meta name="twitter:image" content="https://poroni-kakogawa.com/images/ogp-image.jpg">
+    
+    <!-- その他のメタタグ -->
+    <meta name="description" content="PORONIのご予約状況、キャンセルポリシー、ご利用についての詳細をご確認いただけます。">
+    <meta name="keywords" content="イタリアン,レストラン,加古川,兵庫,予約制,PORONI,予約,キャンセルポリシー">
+    
+    <link rel="stylesheet" href="styles.css?v=1.0.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+      :root{
+        --bg:#f8f7f4;          /* 背景（温かみのあるオフホワイト） */
+        --card:#ffffff;        /* セクション背景 */
+        --text:#2c2c2c;        /* 主要テキスト */
+        --muted:#666666;       /* 補助テキスト */
+        --accent:#8b4513;      /* 強調（ブラウン） */
+        --ok:#15803d;          /* ○ 予約可（深緑） */
+        --ng:#dc2626;          /* △ 定休日（深赤） */
+        --warn:#8b4513;        /* 注意喚起（ブラウン） */
+        --danger:#8b4513;      /* キャンセル料など（ブラウン） */
+        --border:#e5e5e5;      /* 罫線 */
+        --radius:16px;
+        --shadow:0 4px 20px rgba(0,0,0,.08);
+      }
+      
+      /* メインコンテナの調整 */
+      main { padding-top: 0; }
+      
+      .reservation-container{ max-width:1000px; margin:0 auto; padding:32px 20px 64px; }
+      
+      .reservation-header{ margin-bottom:24px; text-align:center; }
+      .reservation-header h1{ font-size:clamp(28px,4vw,36px); margin:0 0 8px; letter-spacing:.1em; color:var(--accent); font-weight:700; }
+      .reservation-header p{ margin:0; color:var(--muted); font-size:1.1rem; }
+
+      .reservation-section{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:32px; margin:24px 0; }
+      .reservation-section h2{ font-size:clamp(22px,3vw,28px); margin:0 0 20px; letter-spacing:.1em; color:var(--accent); font-weight:600; text-align:center; position:relative; }
+      .reservation-section h2::after{ content:''; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%); width:60px; height:2px; background:var(--accent); }
+      .reservation-section h3{ font-size:clamp(18px,2.5vw,22px); margin:24px 0 12px; color:var(--accent); font-weight:600; }
+
+      /* 予約表 */
+      .legend{ display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin:16px 0 0; color:var(--muted); justify-content:center; }
+      .badge{ display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); padding:6px 12px; border-radius:999px; font-size:.95rem; background:var(--card); }
+      .dot{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+      .dot.ok{ background:var(--ok); }
+      .dot.rest{ background:var(--ng); }
+
+      .table-wrap{ border:1px solid var(--border); border-radius:12px; margin:20px 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      
+      @media (max-width: 768px) {
+        .table-wrap{ overflow-x: visible; }
+        table{ min-width: 100%; }
+      }
+      table{ width:100%; border-collapse:separate; border-spacing:0; background:transparent; }
+      caption{ caption-side:top; text-align:center; padding:16px 12px; color:var(--accent); font-size:1rem; font-weight:600; }
+      th,td{ padding:12px 8px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); }
+      th:last-child, td:last-child{ border-right:none; }
+      thead th{ position:sticky; top:0; background:var(--bg); font-weight:600; color:var(--accent); text-align:center; font-size:0.9rem; }
+      tbody th{ text-align:left; font-weight:600; color:var(--text); font-size:0.85rem; line-height:1.3; }
+      tbody td{ text-align:center; font-variant-numeric:tabular-nums; }
+      tr:last-child td, tr:last-child th{ border-bottom:none; }
+      
+      /* モバイル対応 */
+      @media (max-width: 768px) {
+        th,td{ padding:6px 2px; font-size:0.7rem; }
+        thead th{ font-size:0.7rem; }
+        tbody th{ font-size:0.65rem; }
+        .status{ padding:4px 6px; }
+        .status b{ font-size:0.8rem; }
+        caption{ font-size:0.8rem; padding:10px 6px; }
+        .table-wrap{ margin:16px 0; }
+        table{ table-layout: fixed; width: 100%; }
+        tbody th{ width: 25%; }
+        td{ width: 10.7%; }
+        .status{ gap: 4px; }
+        .dot{ width: 8px; height: 8px; }
+      }
+      
+      @media (max-width: 480px) {
+        th,td{ padding:4px 1px; font-size:0.65rem; }
+        thead th{ font-size:0.65rem; }
+        tbody th{ font-size:0.6rem; }
+        .status{ padding:3px 4px; }
+        .status b{ font-size:0.7rem; }
+        caption{ font-size:0.75rem; padding:8px 4px; }
+        .table-wrap{ margin:12px 0; }
+        .reservation-section{ padding:20px 16px; }
+        table{ table-layout: fixed; width: 100%; }
+        tbody th{ width: 28%; }
+        td{ width: 10.3%; }
+        .status{ gap: 3px; }
+        .dot{ width: 6px; height: 6px; }
+      }
+
+      .status{ display:inline-flex; align-items:center; gap:8px; padding:0; border:none; background:none; }
+      .status.ok{ color:var(--ok); }
+      .status.rest{ color:var(--ng); }
+      .status b{ font-weight:700; letter-spacing:.02em; }
+
+      .note{ background:linear-gradient(180deg,rgba(139,69,19,.06),rgba(139,69,19,.03)); border:1px solid var(--border); border-radius:12px; padding:16px 18px; color:var(--text); margin:16px 0; }
+      .note strong{ color:var(--accent); }
+
+      /* キャンセルポリシー */
+      .fee-table-container{ margin: 20px 0; }
+      .fee-table{ width:100%; border-collapse:separate; border-spacing:0; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+      .fee-table th,.fee-table td{ padding:12px 16px; border-bottom:1px solid var(--border); background: var(--card); }
+      .fee-table th{ text-align:left; font-weight:600; color:var(--accent); background: var(--bg); }
+      .fee-table tr:last-child td{ border-bottom:none; }
+      .fee{ font-weight:700; color:var(--danger); font-size:1.1rem; }
+      .callout{ border-left:4px solid var(--warn); background:linear-gradient(180deg,rgba(245,158,11,.06),rgba(245,158,11,.03)); padding:16px 18px; border-radius:10px; margin-top: 20px; }
+      .callout p{ margin: 0 0 12px 0; line-height: 1.6; }
+      .callout p:last-child{ margin-bottom: 0; }
+
+      /* ご利用について */
+      dl.rules{ margin:0; }
+      dl.rules > div{ border-top:1px dashed var(--border); padding:18px 0; }
+      dl.rules > div:first-child{ border-top:none; }
+      dt{ font-weight:700; margin-bottom:6px; color:var(--accent); font-size:1.05rem; }
+      dd{ margin:0; color:var(--text); line-height:1.7; }
+      .muted{ color:var(--muted); }
+
+      .reservation-footer{ margin-top:40px; color:var(--muted); font-size:.95rem; text-align:center; padding:24px 0; border-top:1px solid var(--border); }
+      .kbd{ font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; background:#f5f5f5; border:1px solid var(--border); border-radius:6px; padding:2px 6px; }
+      
+      /* ナビゲーション */
+      .nav-back{ display:inline-flex; align-items:center; gap:8px; color:var(--accent); text-decoration:none; font-weight:600; margin-bottom:24px; padding:8px 16px; border:1px solid var(--accent); border-radius:999px; transition:all 0.2s; }
+      .nav-back:hover{ background:var(--accent); color:white; }
+
+      /* ページ遷移アニメーション */
+      .page-transition-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--accent);
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.4s ease-in-out;
+      }
+
+      .page-transition-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .page-transition-overlay::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top: 3px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+
+      /* ページロード時のフェードイン */
+      body {
+        opacity: 0;
+        animation: fadeIn 0.6s ease-in-out forwards;
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Home-aligned reservation page */
+      body {
+        background-color: #faf8f5;
+      }
+
+      .reservation-container {
+        max-width: 1280px;
+        padding: clamp(8.5rem, 12vw, 10rem) 5% 72px;
+      }
+
+      .reservation-header {
+        max-width: 960px;
+        margin: 0 auto clamp(2.5rem, 5vw, 4rem);
+        text-align: left;
+      }
+
+      .reservation-header h1 {
+        display: flex;
+        align-items: center;
+        gap: 1.4rem;
+        margin-bottom: 1.5rem;
+        color: #211b17;
+        font-size: clamp(2rem, 3.4vw, 3rem);
+        letter-spacing: 0.18em;
+      }
+
+      .reservation-header h1::before {
+        content: '';
+        display: block;
+        width: 52px;
+        height: 1px;
+        background-color: rgba(95, 50, 20, 0.75);
+      }
+
+      .reservation-header p {
+        margin-left: 4.7rem;
+        color: rgba(36, 25, 21, 0.66);
+        font-size: clamp(0.9rem, 1.1vw, 1rem);
+        letter-spacing: 0.08em;
+        line-height: 1.8;
+      }
+
+      .reservation-section {
+        max-width: 1060px;
+        margin: 24px auto;
+        padding: clamp(1.6rem, 3vw, 2.4rem);
+        border: 1px solid rgba(95, 50, 20, 0.1);
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(40, 28, 20, 0.08);
+      }
+
+      .reservation-section h2 {
+        margin-bottom: 2rem;
+        color: #211b17;
+        font-size: clamp(1.35rem, 2vw, 1.8rem);
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-align: left;
+      }
+
+      .reservation-section h2::after {
+        left: 0;
+        bottom: -0.8rem;
+        transform: none;
+        width: 48px;
+        height: 1px;
+        background: #7a4218;
+      }
+
+      .reservation-section h3,
+      dt,
+      caption,
+      .fee,
+      .note strong {
+        color: #7a4218;
+      }
+
+      .table-wrap,
+      .fee-table {
+        border-color: rgba(95, 50, 20, 0.12);
+        border-radius: 8px;
+      }
+
+      thead th,
+      .fee-table th {
+        background: #f3eee8;
+        color: #7a4218;
+      }
+
+      th,
+      td,
+      .fee-table th,
+      .fee-table td {
+        border-color: rgba(95, 50, 20, 0.12);
+      }
+
+      .badge,
+      .note,
+      .callout {
+        border-color: rgba(95, 50, 20, 0.14);
+        border-radius: 8px;
+      }
+
+      .note,
+      .callout {
+        background: rgba(238, 231, 223, 0.62);
+      }
+
+      .callout {
+        border-left-color: #7a4218;
+      }
+
+      .footer-content {
+        margin-top: 4rem;
+      }
+
+      @media (max-width: 768px) {
+        .reservation-container {
+          padding: 6.8rem 1rem 5rem;
+        }
+
+        .reservation-header h1 {
+          gap: 1rem;
+          font-size: clamp(1.8rem, 8vw, 2.4rem);
+        }
+
+        .reservation-header h1::before {
+          width: 36px;
+        }
+
+        .reservation-header p {
+          margin-left: 0;
+        }
+
+        .reservation-section {
+          padding: 1.25rem;
+        }
+
+        body.reservation-page .reservation-banner {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+          transform: none;
+        }
+      }
+    </style>
+</head>
+<body class="day reservation-page" data-lang="ja">
+    <!-- ページ遷移オーバーレイ -->
+    <div class="page-transition-overlay"></div>
+    
+    <a href="#" class="back-to-top" aria-label="ページの先頭に戻る" aria-label-ja="ページの先頭に戻る" aria-label-en="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+            <header>
+                <nav>
+                    <a href="index.html" class="logo" aria-label="PORONI">
+                        <img src="images/logo.png" alt="PORONI">
+                    </a>
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <ul class="nav-links">
+                        <li><a href="index.html#menu" data-ja="メニュー" data-en="MENU">メニュー</a></li>
+                        <li><a href="index.html#news" data-ja="お知らせ" data-en="NEWS">お知らせ</a></li>
+                        <li><a href="reservation.html" data-ja="ご予約" data-en="RESERVATION">ご予約</a></li>
+                        <li><a href="index.html#access" data-ja="店舗情報" data-en="ABOUT">店舗情報</a></li>
+                        <li><a href="index.html#access" data-ja="アクセス" data-en="ACCESS">アクセス</a></li>
+                    </ul>
+                    <div class="language-switch">
+                        <button class="lang-btn active" data-lang="ja">JA</button>
+                        <button class="lang-btn" data-lang="en">EN</button>
+                    </div>
+                </nav>
+            </header>
+
+    <main>
+        <div class="reservation-container">
+            <div class="reservation-header">
+                <h1 data-ja="ご予約・ご利用について" data-en="RESERVATION & POLICIES">ご予約・ご利用について</h1>
+                <p class="muted" data-ja="○ は予約可、△ は定休日。人数条件は各行に記載しています。" data-en="○ Available for reservation, △ Closed. Group size requirements are listed in each row.">○ は予約可、△ は定休日。人数条件は各行に記載しています。</p>
+            </div>
+
+            <section class="reservation-section" aria-labelledby="schedule-heading">
+                <h2 id="schedule-heading" data-ja="予約状況" data-en="RESERVATION STATUS">予約状況</h2>
+            <div class="table-wrap" role="region" aria-label="予約状況表" aria-label-ja="予約状況表" aria-label-en="Reservation Status Table" tabindex="0">
+                <table>
+                    <caption data-ja="ランチは 12:00〜、ディナーは 18:30〜" data-en="Lunch from 12:00, Dinner from 18:30">
+                        ランチは <strong>12:00〜</strong>、ディナーは <strong>18:30〜</strong>
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th scope="col" data-ja="時間帯" data-en="Time">時間帯</th>
+                            <th scope="col" data-ja="月" data-en="Mon">月</th>
+                            <th scope="col" data-ja="火" data-en="Tue">火</th>
+                            <th scope="col" data-ja="水" data-en="Wed">水</th>
+                            <th scope="col" data-ja="木" data-en="Thu">木</th>
+                            <th scope="col" data-ja="金" data-en="Fri">金</th>
+                            <th scope="col" data-ja="土" data-en="Sat">土</th>
+                            <th scope="col" data-ja="日" data-en="Sun">日</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" data-ja="ランチ" data-en="Lunch">ランチ</th>
+                            <td><span class="status rest" aria-label="月曜・定休日" aria-label-ja="月曜・定休日" aria-label-en="Monday - Closed"><b>△</b></span></td>
+                            <td><span class="status rest" aria-label="火曜・定休日" aria-label-ja="火曜・定休日" aria-label-en="Tuesday - Closed"><b>△</b></span></td>
+                            <td><span class="status ok" aria-label="水曜・予約可" aria-label-ja="水曜・予約可" aria-label-en="Wednesday - Available"><b>○</b></span></td>
+                            <td><span class="status ok" aria-label="木曜・予約可" aria-label-ja="木曜・予約可" aria-label-en="Thursday - Available"><b>○</b></span></td>
+                            <td><span class="status ok" aria-label="金曜・予約可" aria-label-ja="金曜・予約可" aria-label-en="Friday - Available"><b>○</b></span></td>
+                            <td><span class="status ok" aria-label="土曜・予約可" aria-label-ja="土曜・予約可" aria-label-en="Saturday - Available"><b>○</b></span></td>
+                            <td><span class="status ok" aria-label="日曜・予約可" aria-label-ja="日曜・予約可" aria-label-en="Sunday - Available"><b>○</b></span></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" data-ja="ディナー" data-en="Dinner">ディナー</th>
+                            <td><span class="status rest" aria-label="月曜・定休日" aria-label-ja="月曜・定休日" aria-label-en="Monday - Closed"><b>△</b></span></td>
+                            <td><span class="status rest" aria-label="火曜・定休日" aria-label-ja="火曜・定休日" aria-label-en="Tuesday - Closed"><b>△</b></span></td>
+                            <td><span class="status rest" aria-label="水曜・定休日" aria-label-ja="水曜・定休日" aria-label-en="Wednesday - Closed"><b>△</b></span></td>
+                            <td><span class="status ok" aria-label="木曜・予約可" aria-label-ja="木曜・予約可" aria-label-en="Thursday - Available"><b>○</b></span></td>
+                            <td><span class="status ok" aria-label="金曜・予約可" aria-label-ja="金曜・予約可" aria-label-en="Friday - Available"><b>○</b></span></td>
+                            <td><span class="status ok" aria-label="土曜・予約可" aria-label-ja="土曜・予約可" aria-label-en="Saturday - Available"><b>○</b></span></td>
+                            <td><span class="status rest" aria-label="日曜・定休日" aria-label-ja="日曜・定休日" aria-label-en="Sunday - Closed"><b>△</b></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="legend" aria-hidden="true">
+                <span class="badge"><span data-ja="○ 予約可" data-en="○ Available">○ 予約可</span></span>
+                <span class="badge"><span data-ja="△ 定休日" data-en="△ Closed">△ 定休日</span></span>
+            </div>
+            <p class="note" style="margin-top:12px;" data-ja="<strong>補足</strong>：月・火曜日は終日、<span class='muted'>水・日曜日のディナー</span>は定休日です。<br>ただし、<strong>ランチは6名様以上</strong>、<strong>ディナーは4名様以上</strong>で定休日でも営業を承ります。詳細はお電話にてご相談ください。" data-en="<strong>Note</strong>: Monday and Tuesday are closed all day, <span class='muted'>Wednesday and Sunday dinner</span> are closed.<br>However, we accept <strong>lunch reservations from 6 guests</strong> and <strong>dinner reservations from 4 guests</strong> even on closed days. Please contact us by phone for details.">
+                <strong>補足</strong>：月・火曜日は終日、<span class="muted">水・日曜日のディナー</span>は定休日です。<br>
+                ただし、<strong>ランチは6名様以上</strong>、<strong>ディナーは4名様以上</strong>で定休日でも営業を承ります。詳細はお電話にてご相談ください。
+            </p>
+        </section>
+
+            <section class="reservation-section" aria-labelledby="booking-heading">
+                <h2 id="booking-heading" data-ja="ご予約について" data-en="ABOUT RESERVATIONS">ご予約について</h2>
+                <ul style="margin: 0; padding-left: 1.5rem; color: var(--text); line-height: 1.8;">
+                    <li data-ja="ディナータイムのご予約は<strong>2名様から</strong>承ります" data-en="Dinner reservations are accepted from <strong>2 guests</strong>">ディナータイムのご予約は<strong>2名様から</strong>承ります</li>
+                    <li data-ja="お席の指定はお受けいたしかねます" data-en="We cannot accept seat requests">お席の指定はお受けいたしかねます</li>
+                    <li data-ja="お料理は全てのご予約のお客様がお揃いになってからの<strong>一斉スタート</strong>です" data-en="All courses start <strong>simultaneously</strong> when all guests arrive">お料理は全てのご予約のお客様がお揃いになってからの<strong>一斉スタート</strong>です</li>
+                    <li data-ja="お時間に余裕をもってご来店ください" data-en="Please arrive with time to spare">お時間に余裕をもってご来店ください</li>
+                    <li data-ja="遅れて到着された場合は、コースの途中からのご提供となることをご了承ください" data-en="If you arrive late, please understand that your course will be served from the middle">遅れて到着された場合は、コースの途中からのご提供となることをご了承ください</li>
+                </ul>
+            </section>
+            
+            <section class="reservation-section" aria-labelledby="cancel-heading">
+                <h2 id="cancel-heading" data-ja="キャンセルポリシー" data-en="CANCELLATION POLICY">キャンセルポリシー</h2>
+            <div class="fee-table-container">
+                <table class="fee-table" aria-label="キャンセル料" aria-label-ja="キャンセル料" aria-label-en="Cancellation Fees">
+                    <tbody>
+                        <tr>
+                            <th scope="row" data-ja="当日" data-en="Same day">当日</th>
+                            <td class="fee" aria-label="当日のキャンセル料" aria-label-ja="当日のキャンセル料" aria-label-en="Same day cancellation fee">100%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" data-ja="前日〜3日前" data-en="1-3 days prior">前日〜3日前</th>
+                            <td class="fee" aria-label="前日から3日前のキャンセル料" aria-label-ja="前日から3日前のキャンセル料" aria-label-en="Cancellation fee 1-3 days prior">50%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="callout">
+                <p data-ja="当店は<strong>8席・完全予約制</strong>のため、一週間以上前から仕込み・準備・席の確保を行っております。理由の如何を問わず、<strong>ご予約当日から一週間前</strong>のキャンセルにはキャンセル料を申し受けます。" data-en="As we are a <strong>8-seat, reservation-only</strong> restaurant, we prepare ingredients, make arrangements, and reserve seats from one week in advance. Regardless of the reason, we charge a cancellation fee for cancellations from <strong>the day of reservation to one week prior</strong>.">当店は<strong>8席・完全予約制</strong>のため、一週間以上前から仕込み・準備・席の確保を行っております。理由の如何を問わず、<strong>ご予約当日から一週間前</strong>のキャンセルにはキャンセル料を申し受けます。</p>
+                <p class="muted" data-ja="台風等の自然災害によるキャンセルは、個別にご相談のうえ柔軟に対応いたします。" data-en="For cancellations due to natural disasters such as typhoons, we will respond flexibly after individual consultation.">台風等の自然災害によるキャンセルは、個別にご相談のうえ柔軟に対応いたします。</p>
+            </div>
+        </section>
+
+            <section class="reservation-section" aria-labelledby="rules-heading">
+                <h2 id="rules-heading" data-ja="ご利用について" data-en="USAGE POLICIES">ご利用について</h2>
+            <dl class="rules">
+                <div>
+                    <dt data-ja="アレルギー・食事制限" data-en="Allergies & Dietary Restrictions">アレルギー・食事制限</dt>
+                    <dd data-ja="過度なアレルギー対応やビーガンの方への対応は、誠に申し訳ございませんが<strong>お受けいたしかねます</strong>。" data-en="We sincerely apologize, but we <strong>cannot accommodate</strong> excessive allergy requests or vegan dietary requirements.">過度なアレルギー対応やビーガンの方への対応は、誠に申し訳ございませんが<strong>お受けいたしかねます</strong>。</dd>
+                </div>
+                <div>
+                    <dt data-ja="お子様のご来店" data-en="Children">お子様のご来店</dt>
+                    <dd data-ja="大人のお客様と同じコースを<strong>お召し上がりいただける方に限り</strong>ご来店を承ります。" data-en="We accept children <strong>only if they can enjoy the same course as adults</strong>.">大人のお客様と同じコースを<strong>お召し上がりいただける方に限り</strong>ご来店を承ります。</dd>
+                </div>
+                <div>
+                    <dt data-ja="香水" data-en="Perfume">香水</dt>
+                    <dd data-ja="香りが料理体験に影響するため、<strong>過度な香水はご遠慮ください</strong>。" data-en="As fragrance affects the dining experience, please <strong>refrain from excessive perfume</strong>.">香りが料理体験に影響するため、<strong>過度な香水はご遠慮ください</strong>。</dd>
+                </div>
+                <div>
+                    <dt data-ja="コルケージ" data-en="Corkage">コルケージ</dt>
+                    <dd data-ja="ワインのお持ち込みは、<strong>抜栓料 1本 5,000円</strong>を頂戴いたします。" data-en="For wine brought in, we charge <strong>5,000 yen per bottle</strong> corkage fee.">ワインのお持ち込みは、<strong>抜栓料 1本 5,000円</strong>を頂戴いたします。</dd>
+                </div>
+                <div>
+                    <dt data-ja="貸切" data-en="Private Dining">貸切</dt>
+                    <dd data-ja="ランチは<strong>7名様以上</strong>、ディナーは<strong>6名様以上</strong>で承ります。" data-en="Private dining is available for <strong>7 guests or more for lunch</strong> and <strong>6 guests or more for dinner</strong>.">ランチは<strong>7名様以上</strong>、ディナーは<strong>6名様以上</strong>で承ります。</dd>
+                </div>
+                <div>
+                    <dt data-ja="撮影" data-en="Photography">撮影</dt>
+                    <dd data-ja="携帯電話・カメラ・ビデオでの撮影は、<strong>他のお客様が写り込まないよう</strong>ご配慮ください。" data-en="Please be considerate when taking photos/videos with mobile phones, cameras, or video equipment so that <strong>other guests are not captured</strong>.">携帯電話・カメラ・ビデオでの撮影は、<strong>他のお客様が写り込まないよう</strong>ご配慮ください。</dd>
+                </div>
+                <div>
+                    <dt data-ja="決済・領収書" data-en="Payment & Receipts">決済・領収書</dt>
+                    <dd data-ja="当店は、現金および三井住友カードの「stera pack（ステラパック）」による各種キャッシュレス決済に対応しています。<br><br><strong>クレジットカード</strong>：Visa／Mastercard／JCB／American Express／Diners Club／Discover／UnionPay<br><strong>電子マネー</strong>：交通系IC（Suica・PASMO・ICOCA 等）／iD／QUICPay＋／楽天Edy／nanaco／WAON<br><strong>QRコード決済</strong>：PayPay／d払い／au PAY／楽天ペイ／メルペイ／ゆうちょPay／Alipay／WeChat Pay<br><br>※対応状況は審査・加盟店契約等により一部ご利用いただけない場合があります。<br>※インボイス制度に対応した領収書の発行が可能です。宛名・但し書き等の指定がある場合は会計時にお申し出ください。" data-en="We accept cash and various cashless payments through Sumitomo Mitsui Card's 'stera pack'.<br><br><strong>Credit Cards</strong>: Visa/Mastercard/JCB/American Express/Diners Club/Discover/UnionPay<br><strong>Electronic Money</strong>: Transport IC cards (Suica/PASMO/ICOCA etc.)/iD/QUICPay+/Rakuten Edy/nanaco/WAON<br><strong>QR Code Payments</strong>: PayPay/d-payment/au PAY/Rakuten Pay/Merpay/Yuucho Pay/Alipay/WeChat Pay<br><br>※Some payment methods may not be available due to review and merchant contract conditions.<br>※We can issue receipts compliant with the invoice system. Please specify recipient name and description at checkout if required.">当店は、現金および三井住友カードの「stera pack（ステラパック）」による各種キャッシュレス決済に対応しています。<br><br><strong>クレジットカード</strong>：Visa／Mastercard／JCB／American Express／Diners Club／Discover／UnionPay<br><strong>電子マネー</strong>：交通系IC（Suica・PASMO・ICOCA 等）／iD／QUICPay＋／楽天Edy／nanaco／WAON<br><strong>QRコード決済</strong>：PayPay／d払い／au PAY／楽天ペイ／メルペイ／ゆうちょPay／Alipay／WeChat Pay<br><br>※対応状況は審査・加盟店契約等により一部ご利用いただけない場合があります。<br>※インボイス制度に対応した領収書の発行が可能です。宛名・但し書き等の指定がある場合は会計時にお申し出ください。</dd>
+                </div>
+            </dl>
+        </section>
+
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="images/logo.png" alt="PORONI">
+                </div>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/poroni_kakogawa/" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.facebook.com/poroni" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                </div>
+                <div class="footer-info">
+                    <p>〒675-1226</p>
+                    <p data-ja="兵庫県加古川市平荘町磐265-2" data-en="265-2 Hirazou-cho Iwai, Kakogawa-shi, Hyogo">兵庫県加古川市平荘町磐265-2</p>
+                    <p>079-451-5898</p>
+                </div>
+                <div class="footer-hours">
+                    <p data-ja="定休日: 毎週月火曜日" data-en="Closed: Every Monday & Tuesday">定休日: 毎週月火曜日</p>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 PORONI All Rights Reserved.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <a href="https://www.tablecheck.com/ja/poroni/reserve/landing" class="reservation-banner" target="_blank" rel="noopener noreferrer" data-ja="ご予約・空席確認" data-en="RESERVATION / AVAILABILITY">ご予約・空席確認</a>
+
+    <script src="script.js?v=1.0.1"></script>
+</body>
+</html>

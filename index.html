@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <title>PORONI｜Kakogawa, Hyogo</title>
+    
+    <!-- OGP / Twitter Card -->
+    <meta property="og:title" content="PORONI｜Kakogawa, Hyogo">
+    <meta property="og:description" content="兵庫県加古川市にある完全予約制のイタリアンレストラン。厳選された食材でお客様に最高のひとときをお届けします。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://poroni-kakogawa.com">
+    <meta property="og:image" content="https://poroni-kakogawa.com/images/ogp-image.jpg">
+    <meta property="og:site_name" content="PORONI">
+    <meta property="og:locale" content="ja_JP">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PORONI｜Kakogawa, Hyogo">
+    <meta name="twitter:description" content="兵庫県加古川市にある完全予約制のイタリアンレストラン。厳選された食材でお客様に最高のひとときをお届けします。">
+    <meta name="twitter:image" content="https://poroni-kakogawa.com/images/ogp-image.jpg">
+    
+    <!-- その他のメタタグ -->
+    <meta name="description" content="兵庫県加古川市にある完全予約制のイタリアンレストラン。厳選された食材でお客様に最高のひとときをお届けします。">
+    <meta name="keywords" content="イタリアン,レストラン,加古川,兵庫,予約制,PORONI">
+    <link rel="stylesheet" href="styles.css?v=1.0.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="day site-loading" data-lang="ja">
+    <div class="page-loader" aria-hidden="true">
+        <img src="images/logo.png" alt="">
+    </div>
+    <a href="#" class="back-to-top" aria-label="ページの先頭に戻る">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+    <header>
+        <nav>
+            <a href="#" class="logo" aria-label="PORONI">
+                <img src="images/logo.png" alt="PORONI">
+            </a>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#menu">メニュー</a></li>
+                <li><a href="#news">お知らせ</a></li>
+                <li><a href="reservation.html">ご予約</a></li>
+                <li><a href="#access">店舗情報</a></li>
+                <li><a href="#access">アクセス</a></li>
+            </ul>
+            <div class="language-switch">
+                <button class="lang-btn active" data-lang="ja">JA</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="scroll-indicator-left">
+        <div class="scroll-dot" data-section="home"></div>
+        <div class="scroll-dot" data-section="menu"></div>
+        <div class="scroll-dot" data-section="about"></div>
+        <div class="scroll-dot" data-section="contact"></div>
+    </div>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 data-ja="古民家で味わう、<br>季節の和食" data-en="Seasonal Japanese Cuisine at PORONI">古民家で味わう、<br>季節の和食</h1>
+                    <p data-ja="伝統と革新が調和する、PORONIだけの特別な料理体験をお楽しみください。" data-en="Enjoy a special dining experience where tradition and refinement meet at PORONI.">伝統と革新が調和する、PORONIだけの特別な料理体験をお楽しみください。</p>
+                    <p class="hero-en" data-ja="Seasonal Japanese cuisine in a renovated traditional house." data-en="Seasonal Japanese cuisine in a renovated traditional house.">Seasonal Japanese cuisine in a renovated traditional house.</p>
+                    <a href="reservation.html" class="hero-reservation-link" data-ja="ご予約・空席確認" data-en="RESERVATION / AVAILABILITY">ご予約・空席確認</a>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <span></span>
+            </div>
+            <div class="hero-decoration">
+                <div class="decoration-line"></div>
+                <div class="decoration-circle"></div>
+                <div class="decoration-line"></div>
+            </div>
+        </section>
+
+        <section id="news" class="news-section">
+            <div class="news-container">
+                <h2 class="section-title" data-ja="お知らせ" data-en="NEWS">お知らせ</h2>
+                <p class="news-lead" data-ja="PORONIからの最新情報をお届けします。" data-en="The latest news from PORONI.">PORONIからの最新情報をお届けします。</p>
+                <div id="news-list" class="news-list">
+                    <!-- RSSフィードの内容がここに表示されます -->
+                </div>
+            </div>
+        </section>
+
+        <section id="menu" class="menu-section">
+            <div class="menu-container">
+                <h2 class="section-title" data-ja="メニュー" data-en="MENU">メニュー</h2>
+                <div class="menu-intro">
+                    <p data-ja="季節の恵みを大切に、素材の持ち味を引き出したおまかせコースをご用意しております。" data-en="Seasonal tasting courses prepared to bring out the best of each ingredient.">季節の恵みを大切に、素材の持ち味を引き出したおまかせコースをご用意しております。</p>
+                </div>
+                <div class="menu-grid">
+                    <div class="menu-item">
+                        <div class="menu-item-image">
+                            <img src="images/2.jpg" alt="ランチコース">
+                        </div>
+                        <div class="menu-item-content">
+                            <h3 data-ja="ランチコース" data-en="LUNCH COURSE">ランチコース</h3>
+                            <p class="menu-item-price" data-ja="¥11,000" data-en="¥11,000">¥11,000</p>
+                            <p class="menu-item-tax" data-ja="（税込）" data-en="tax incl.">（税込）</p>
+                            <p class="menu-item-description" data-ja="季節の食材を使った、昼のコースをご用意しています。" data-en="A daytime course featuring seasonal ingredients.">季節の食材を使った、昼のコースをご用意しています。</p>
+                            <div class="menu-item-times">
+                                <p class="menu-item-time" data-ja="11:50 ドアオープン" data-en="Doors open at 11:50">11:50 ドアオープン</p>
+                                <p class="menu-item-time" data-ja="12:00までのご来店をお願いしております。" data-en="Please arrive by 12:00.">12:00までのご来店をお願いしております。</p>
+                            </div>
+                            <a href="reservation.html" class="menu-reservation-link" data-ja="ご予約・空席確認" data-en="RESERVATION / AVAILABILITY">ご予約・空席確認</a>
+                        </div>
+                    </div>
+                    <div class="menu-item menu-item-recommended">
+                        <div class="menu-item-image">
+                            <img src="images/3.jpg" alt="ディナーコース">
+                        </div>
+                        <div class="menu-item-content">
+                            <span class="menu-badge" data-ja="おすすめ" data-en="Recommended">おすすめ</span>
+                            <h3 data-ja="ディナーコース" data-en="DINNER COURSE">ディナーコース</h3>
+                            <p class="menu-item-price" data-ja="¥16,500" data-en="¥16,500">¥16,500</p>
+                            <p class="menu-item-tax" data-ja="（税込）" data-en="tax incl.">（税込）</p>
+                            <p class="menu-item-description" data-ja="その日一番の食材でしつらえる、夜の特別なコースです。" data-en="A special evening course composed with the finest ingredients of the day.">その日一番の食材でしつらえる、夜の特別なコースです。</p>
+                            <div class="menu-item-times">
+                                <p class="menu-item-time" data-ja="18:20 ドアオープン" data-en="Doors open at 18:20">18:20 ドアオープン</p>
+                                <p class="menu-item-time" data-ja="18:30までのご来店をお願いしております。" data-en="Please arrive by 18:30.">18:30までのご来店をお願いしております。</p>
+                            </div>
+                            <a href="reservation.html" class="menu-reservation-link" data-ja="ご予約・空席確認" data-en="RESERVATION / AVAILABILITY">ご予約・空席確認</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-note">
+                    <p data-ja="価格はすべて税込です" data-en="All prices include tax.">価格はすべて税込です</p>
+                    <p data-ja="コースはすべておまかせとなり、内容は季節や仕入れにより異なります" data-en="All courses are chef's choice and may vary depending on the season and availability.">コースはすべておまかせとなり、内容は季節や仕入れにより異なります</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="image-slider-section">
+            <div class="image-slider">
+                <div class="image-slider-track">
+                    <div class="image-slider-item">
+                        <img src="images/1.jpg" alt="料理画像1">
+                        <span class="image-caption">炭火で仕上げた季節魚</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/2.jpg" alt="料理画像2">
+                        <span class="image-caption">季節野菜のひと皿</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/3.jpg" alt="料理画像3">
+                        <span class="image-caption">余韻を楽しむ甘味</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/4.jpg" alt="料理画像4">
+                        <span class="image-caption">自家焙煎コーヒー</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/5.jpg" alt="料理画像5">
+                        <span class="image-caption">旬を映す前菜</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/6.jpg" alt="料理画像6">
+                        <span class="image-caption">香りを重ねる一品</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/7.jpg" alt="料理画像7">
+                        <span class="image-caption">古民家で過ごす時間</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/8.jpg" alt="料理画像8">
+                        <span class="image-caption">季節を味わう椀物</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/9.jpg" alt="料理画像9">
+                        <span class="image-caption">素材を生かした逸品</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/10.jpg" alt="料理画像10">
+                        <span class="image-caption">締めくくりのひと皿</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/11.jpg" alt="料理画像11">
+                        <span class="image-caption">静けさに包まれる食卓</span>
+                    </div>
+                    <!-- 同じ画像を繰り返してシームレスなループを作成 -->
+                    <div class="image-slider-item">
+                        <img src="images/1.jpg" alt="料理画像1">
+                        <span class="image-caption">炭火で仕上げた季節魚</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/2.jpg" alt="料理画像2">
+                        <span class="image-caption">季節野菜のひと皿</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/3.jpg" alt="料理画像3">
+                        <span class="image-caption">余韻を楽しむ甘味</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/4.jpg" alt="料理画像4">
+                        <span class="image-caption">自家焙煎コーヒー</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/5.jpg" alt="料理画像5">
+                        <span class="image-caption">旬を映す前菜</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/6.jpg" alt="料理画像6">
+                        <span class="image-caption">香りを重ねる一品</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/7.jpg" alt="料理画像7">
+                        <span class="image-caption">古民家で過ごす時間</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/8.jpg" alt="料理画像8">
+                        <span class="image-caption">季節を味わう椀物</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/9.jpg" alt="料理画像9">
+                        <span class="image-caption">素材を生かした逸品</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/10.jpg" alt="料理画像10">
+                        <span class="image-caption">締めくくりのひと皿</span>
+                    </div>
+                    <div class="image-slider-item">
+                        <img src="images/11.jpg" alt="料理画像11">
+                        <span class="image-caption">静けさに包まれる食卓</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="access" class="about-section">
+            <div class="about-background">
+                <img src="images/poroni.png" alt="PORONI" class="about-bg-img">
+            </div>
+            <div class="about-inner">
+                <h2 class="section-title" data-ja="店舗情報" data-en="ABOUT">店舗情報</h2>
+                <div class="about-content">
+                    <div class="info">
+                        <h3 data-ja="営業時間" data-en="HOURS">営業時間</h3>
+                        <p data-ja="ランチ（水〜日）｜ディナー（木〜土）" data-en="Lunch (Wed-Sun) | Dinner (Thu-Sat)">ランチ（水〜日）｜ディナー（木〜土）</p>
+                        <p data-ja="定休日：月・火" data-en="Closed: Mon & Tue">定休日：月・火</p>
+                    </div>
+                    <div class="info">
+                        <h3 data-ja="ご予約・お問い合わせ" data-en="RESERVATIONS & CONTACT">ご予約・お問い合わせ</h3>
+                        <p>電話: <a href="tel:079-451-5898">079-451-5898</a></p>
+                        <p data-ja="完全予約制となっております" data-en="Reservations required">完全予約制となっております</p>
+                    </div>
+                </div>
+                    <div class="info">
+                        <h3 data-ja="アクセス" data-en="ACCESS">アクセス</h3>
+                        <p>〒675-1226</p>
+                        <p><a href="https://www.google.com/maps/search/?api=1&query=兵庫県加古川市平荘町磐265-2" target="_blank" rel="noopener noreferrer" class="address-link" data-ja="兵庫県加古川市平荘町磐265-2" data-en="265-2 Hirazou-cho Iwai, Kakogawa-shi, Hyogo">兵庫県加古川市平荘町磐265-2</a></p>
+                        <p data-ja="最寄り駅：厄神（徒歩 1時間9分 / 車 11分）" data-en="Nearest Station: Yakujin (1h 9min walk / 11min by car)">最寄り駅：厄神（徒歩 1時間9分 / 車 11分）</p>
+                        <p data-ja="駐車場：店前に9台分ご用意しております" data-en="Parking: 9 spaces available in front of the restaurant">駐車場：店前に9台分ご用意しております</p>
+                    </div>
+                </div>
+                <div class="map-container">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1022.4607649499534!2d134.88229241028822!3d34.8238959133145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x355529675cb7333f%3A0x6c41232e77e483df!2z44Od44Ot44OL!5e0!3m2!1sja!2sjp!4v1756908864760!5m2!1sja!2sjp"
+                        width="600"
+                        height="450"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <img src="images/logo.png" alt="PORONI">
+                    </div>
+                    <div class="footer-social">
+                        <a href="https://www.instagram.com/poroni_kakogawa/" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.facebook.com/poroni" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </div>
+                    <div class="footer-info">
+                        <p>〒675-1226</p>
+                        <p data-ja="兵庫県加古川市平荘町磐265-2" data-en="265-2 Hirazou-cho Iwai, Kakogawa-shi, Hyogo">兵庫県加古川市平荘町磐265-2</p>
+                        <p>079-451-5898</p>
+                    </div>
+                    <div class="footer-hours">
+                        <p data-ja="定休日: 毎週月火曜日" data-en="Closed: Every Monday & Tuesday">定休日: 毎週月火曜日</p>
+                    </div>
+                    <div class="footer-bottom">
+                        <p>&copy; 2025 PORONI All Rights Reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <a href="reservation.html" class="reservation-banner" data-ja="ご予約・空席確認" data-en="RESERVATION / AVAILABILITY">ご予約・空席確認</a>
+
+    <script src="script.js?v=1.0.1"></script>
+</body>
+</html> 
