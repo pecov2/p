@@ -3257,9 +3257,30 @@ body.is-scrolling-up .menu-section .menu-note {
 }
 
 @media (max-width: 768px) {
+    .floating-section-content-mask {
+        height: clamp(10.5rem, 19vh, 13.5rem);
+    }
+
     .floating-section-index {
-        top: clamp(5.4rem, 12vh, 7rem);
-        gap: 1rem;
+        top: clamp(4.65rem, 9.6vh, 5.8rem);
+        gap: 0.46rem;
         width: min(90vw, 420px);
+    }
+
+    .floating-section-index-en {
+        font-size: 0.56rem;
+        letter-spacing: 0.52em;
+        text-indent: 0.52em;
+    }
+
+    .floating-section-index-ja {
+        font-size: clamp(0.98rem, 4.45vw, 1.24rem);
+        letter-spacing: 0.2em;
+        text-indent: 0.2em;
+        line-height: 1.32;
+    }
+
+    .floating-section-index-line {
+        width: 30px;
     }
 }
