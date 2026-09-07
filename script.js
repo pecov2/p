@@ -343,13 +343,19 @@ function initMobileReservationToggle() {
     const fixedButton = document.querySelector('.reservation-banner');
     const mobileQuery = window.matchMedia('(max-width: 768px)');
 
-    if (!heroButton || !fixedButton) {
+    if (!fixedButton) {
         return;
     }
 
     const setFixedVisible = visible => {
         document.body.classList.toggle('show-mobile-reservation', mobileQuery.matches && visible);
     };
+
+    if (!heroButton) {
+        setFixedVisible(true);
+        mobileQuery.addEventListener('change', () => setFixedVisible(true));
+        return;
+    }
 
     const observer = new IntersectionObserver(entries => {
         const entry = entries[0];
@@ -368,6 +374,161 @@ function initMobileReservationToggle() {
 }
 
 // i18n切替の改善
+function initFloatingSectionIndex() {
+    const sections = [
+        {
+            el: document.querySelector('#menu'),
+            en: 'MENU',
+            ja: '\u30e1\u30cb\u30e5\u30fc'
+        },
+        {
+            el: document.querySelector('.image-slider-section:not(.image-slider-section-top)'),
+            en: 'MEDIA',
+            ja: '\u63b2\u8f09\u30fb\u53d6\u6750\u306e\u8a18\u9332'
+        },
+        {
+            el: document.querySelector('#access'),
+            en: 'ABOUT',
+            ja: '\u5e97\u8217\u60c5\u5831'
+        }
+    ].filter(item => item.el);
+
+    if (!sections.length) return;
+
+    const mask = document.createElement('div');
+    mask.className = 'floating-section-content-mask';
+    mask.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(mask);
+
+    const index = document.createElement('div');
+    index.className = 'floating-section-index';
+    index.setAttribute('aria-hidden', 'true');
+    index.innerHTML = `
+        <span class="floating-section-index-en"></span>
+        <span class="floating-section-index-ja"></span>
+        <span class="floating-section-index-line"></span>
+    `;
+    document.body.appendChild(index);
+
+    const enLabel = index.querySelector('.floating-section-index-en');
+    const jaLabel = index.querySelector('.floating-section-index-ja');
+    const revealTargets = sections.map(section => ({
+        section,
+        items: Array.from(section.el.querySelectorAll([
+            '.menu-intro',
+            '.menu-item',
+            '#three-menu-container',
+            '.menu-note',
+            '.image-slider',
+            '.about-content .info',
+            '.map-container',
+            '.footer-content'
+        ].join(',')))
+    }));
+    const revealObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-content-visible');
+            }
+        });
+    }, {
+        threshold: 0.16,
+        rootMargin: '0px 0px -8% 0px'
+    });
+
+    revealTargets.forEach(({ items }) => {
+        items.forEach((item, index) => {
+            item.classList.add('floating-reveal-item');
+            item.style.setProperty('--floating-reveal-delay', `${Math.min(index * 90, 360)}ms`);
+            revealObserver.observe(item);
+        });
+    });
+
+    let activeSection = null;
+    let activeRevealTimer = null;
+    let indexIsVisible = false;
+    let lastScrollY = window.scrollY || window.pageYOffset || 0;
+
+    const activateSectionContent = section => {
+        window.clearTimeout(activeRevealTimer);
+
+        revealTargets.forEach(({ items }) => {
+            items.forEach(item => item.classList.remove('is-index-active'));
+        });
+        sections.forEach(({ el }) => el.classList.remove('is-index-active-section'));
+
+        activeRevealTimer = window.setTimeout(() => {
+            if (!indexIsVisible) return;
+            section.el.classList.add('is-index-active-section');
+            revealTargets
+                .filter(group => group.section === section)
+                .forEach(({ items }) => {
+                    items.forEach(item => {
+                        item.classList.add('is-index-active', 'is-content-visible');
+                    });
+                });
+        }, 260);
+    };
+
+    const setActiveSection = section => {
+        if (!section || activeSection === section) return;
+        const lang = document.body.dataset.lang || 'ja';
+        activeSection = section;
+        enLabel.textContent = section.en;
+        jaLabel.textContent = lang === 'en' ? section.en : section.ja;
+        index.classList.remove('is-changing');
+        requestAnimationFrame(() => index.classList.add('is-changing'));
+        activateSectionContent(section);
+    };
+
+    const update = () => {
+        const currentScrollY = window.scrollY || window.pageYOffset || 0;
+        const isScrollingUp = currentScrollY < lastScrollY;
+        document.body.classList.toggle('is-scrolling-up', isScrollingUp);
+        document.body.classList.toggle('is-scrolling-down', !isScrollingUp);
+        lastScrollY = currentScrollY;
+
+        const viewportMarker = window.innerHeight * 0.34;
+        let current = sections[0];
+
+        sections.forEach(section => {
+            const rect = section.el.getBoundingClientRect();
+            if (rect.top <= viewportMarker && rect.bottom > viewportMarker) {
+                current = section;
+            }
+        });
+
+        const firstTop = sections[0].el.getBoundingClientRect().top;
+        const lastBottom = sections[sections.length - 1].el.getBoundingClientRect().bottom;
+        const shouldShow = firstTop <= window.innerHeight * 0.42 && lastBottom >= window.innerHeight * 0.18;
+
+        index.classList.toggle('is-visible', shouldShow);
+        mask.classList.toggle('is-visible', shouldShow);
+        indexIsVisible = shouldShow;
+
+        if (shouldShow) {
+            setActiveSection(current);
+        } else {
+            window.clearTimeout(activeRevealTimer);
+            activeSection = null;
+            revealTargets.forEach(({ items }) => {
+                items.forEach(item => item.classList.remove('is-index-active'));
+            });
+            sections.forEach(({ el }) => el.classList.remove('is-index-active-section'));
+        }
+    };
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    document.addEventListener('poroni:langchange', () => {
+        const previous = activeSection;
+        activeSection = null;
+        setActiveSection(previous);
+    });
+
+    update();
+}
+
 const setLang = lang => {
     document.documentElement.setAttribute('lang', lang);
     document.querySelectorAll('[data-ja],[data-en]').forEach(el => {
@@ -400,6 +561,7 @@ const setLang = lang => {
     });
 
     document.body.dataset.lang = lang;
+    document.dispatchEvent(new CustomEvent('poroni:langchange'));
 };
 
 document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -418,6 +580,7 @@ setLang(document.body.dataset.lang || 'ja');
 document.addEventListener('DOMContentLoaded', function () {
     initMobileReservationToggle();
     initThreeMenuSlider();
+    initFloatingSectionIndex();
     initThreeSlider();
     initScrollVelocityInertia();
 });
@@ -630,6 +793,7 @@ function initThreeMenuSlider() {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
     renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.domElement.classList.add('three-menu-cards-canvas');
     container.appendChild(renderer.domElement);
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.92));
@@ -850,6 +1014,7 @@ function initThreeMenuSlider() {
     let previousOffset = 0;
     let dragVelocity = 0;
     let lastX = 0;
+    let revealProgress = 0;
 
     applyMenuLayout();
 
@@ -902,6 +1067,10 @@ function initThreeMenuSlider() {
     function animateMenu() {
         requestAnimationFrame(animateMenu);
 
+        const targetReveal = section?.classList.contains('is-index-active-section') ? 1 : 0;
+        revealProgress += (targetReveal - revealProgress) * 0.035;
+        const revealDirection = document.body.classList.contains('is-scrolling-up') ? 1 : -1;
+
         const offsetEase = isDragging ? 0.16 : 0.055;
         currentOffset += (targetOffset - currentOffset) * offsetEase;
 
@@ -910,7 +1079,7 @@ function initThreeMenuSlider() {
             const distanceFromCenter = Math.abs(x);
             const depth = Math.max(0, 1 - distanceFromCenter / (cardGap * 1.15));
             const z = -distanceFromCenter * 0.42 + depth * 0.8;
-            const y = depth * 0.08;
+            const y = depth * 0.08 + revealDirection * (1 - revealProgress) * 0.42;
             const scale = 0.86 + depth * 0.12;
             const targetPosition = new THREE.Vector3(x, y, z);
             const targetScale = new THREE.Vector3(scale, scale, 1);
@@ -924,13 +1093,328 @@ function initThreeMenuSlider() {
                 mesh.scale.lerp(targetScale, 0.12);
             }
             mesh.rotation.set(0, 0, 0);
-            mesh.material.opacity = 1;
+            mesh.material.opacity = revealProgress;
+            mesh.visible = revealProgress > 0.01;
         });
 
         renderer.render(scene, camera);
     }
 
     animateMenu();
+}
+
+function initThreeMediaCards(container, section, itemsData) {
+    section?.classList.add('has-three', 'has-three-media');
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
+    camera.position.set(0, 0, 11);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.domElement.classList.add('three-media-cards-canvas');
+    container.appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 1.15));
+
+    const keyLight = new THREE.DirectionalLight(0xfff5ea, 0.5);
+    keyLight.position.set(4, 6, 8);
+    scene.add(keyLight);
+
+    const mediaItems = [
+        {
+            src: itemsData[0]?.src || 'images/media/media1.jpg',
+            type: 'MAGAZINE',
+            title: ['\u6599\u7406\u738b\u56fd'],
+            date: '2026.04'
+        },
+        {
+            src: itemsData[1]?.src || 'images/media/media2.jpg',
+            type: 'MOVIE',
+            title: ['\u706b\u3068\u3001\u65ec\u3068\u3001\u4eba\u3068'],
+            date: '2025.11',
+            isMovie: true,
+            url: itemsData[1]?.selectedUrl
+        },
+        {
+            src: itemsData[2]?.src || 'images/media/media3.jpg',
+            type: 'WEB',
+            title: ['\u3053\u306e\u5834\u6240\u3067\u3057\u304b', '\u5473\u308f\u3048\u306a\u3044\u3082\u306e'],
+            date: '2025.08'
+        },
+        {
+            src: itemsData[3]?.src || 'images/media/media4.jpg',
+            type: 'NEWSPAPER',
+            title: ['\u5730\u57df\u306e\u672a\u6765\u3092\u3001', '\u98df\u3067\u3064\u306a\u3050'],
+            date: '2025.06'
+        }
+    ];
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    const cardMeshes = [];
+    let anchors = [];
+    let hoveredMesh = null;
+    let cardWidth = 4.5;
+    let cardHeight = 2.78;
+    let revealProgress = 0;
+
+    const lerp = (from, to, amount) => from + (to - from) * amount;
+    const ease = amount => amount * amount * (3 - 2 * amount);
+
+    const roundedRect = (ctx, x, y, width, height, radius) => {
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(x, y, width, height, radius);
+            return;
+        }
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+    };
+
+    const drawCoverImage = (ctx, image, width, height) => {
+        const imageRatio = image.naturalWidth / image.naturalHeight;
+        const canvasRatio = width / height;
+        let sx = 0;
+        let sy = 0;
+        let sw = image.naturalWidth;
+        let sh = image.naturalHeight;
+
+        if (imageRatio > canvasRatio) {
+            sw = image.naturalHeight * canvasRatio;
+            sx = (image.naturalWidth - sw) / 2;
+        } else {
+            sh = image.naturalWidth / canvasRatio;
+            sy = (image.naturalHeight - sh) / 2;
+        }
+
+        ctx.drawImage(image, sx, sy, sw, sh, 0, 0, width, height);
+    };
+
+    const drawCard = (item, image) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 960;
+        canvas.height = 594;
+        const ctx = canvas.getContext('2d');
+
+        ctx.save();
+        roundedRect(ctx, 0, 0, canvas.width, canvas.height, 28);
+        ctx.clip();
+        ctx.fillStyle = '#1c1510';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (image) {
+            ctx.filter = 'saturate(0.82) contrast(0.95) brightness(0.82)';
+            drawCoverImage(ctx, image, canvas.width, canvas.height);
+            ctx.filter = 'none';
+        }
+
+        const sideShade = ctx.createLinearGradient(0, 0, canvas.width, 0);
+        sideShade.addColorStop(0, 'rgba(18, 11, 6, 0.68)');
+        sideShade.addColorStop(0.58, 'rgba(18, 11, 6, 0.14)');
+        sideShade.addColorStop(1, 'rgba(18, 11, 6, 0.28)');
+        ctx.fillStyle = sideShade;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const bottomShade = ctx.createLinearGradient(0, 260, 0, canvas.height);
+        bottomShade.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        bottomShade.addColorStop(1, 'rgba(12, 8, 5, 0.78)');
+        ctx.fillStyle = bottomShade;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.38)';
+        ctx.shadowBlur = 18;
+        ctx.font = '600 19px Georgia, serif';
+        ctx.fillText(item.type, 70, 396);
+
+        ctx.font = '500 40px "Shippori Mincho B1", "Noto Serif JP", serif';
+        item.title.forEach((line, index) => {
+            ctx.fillText(line, 70, 452 + index * 48);
+        });
+
+        ctx.font = '600 18px Georgia, serif';
+        ctx.fillText(item.date, 70, 544);
+        ctx.font = '400 42px Georgia, serif';
+        ctx.fillText('\u2192', 835, 525);
+
+        if (item.isMovie) {
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.arc(480, 270, 48, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.86)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(466, 242);
+            ctx.lineTo(466, 298);
+            ctx.lineTo(508, 270);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+            ctx.fill();
+        }
+
+        ctx.restore();
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+        texture.generateMipmaps = false;
+        return texture;
+    };
+
+    const updateLayout = () => {
+        const width = container.clientWidth || window.innerWidth;
+        const height = container.clientHeight || 760;
+        const isMobile = width <= 640;
+
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.position.z = isMobile ? 12.4 : 10.8;
+        camera.updateProjectionMatrix();
+
+        cardWidth = isMobile ? 3.08 : 3.78;
+        cardHeight = cardWidth / 1.62;
+        anchors = isMobile ? [
+            { x: -1.7, y: 2.02, z: -0.22, rx: 0.018, ry: -0.16, rz: 0.085, s: 0.94, order: 5 },
+            { x: 1.7, y: 1.2, z: 0.02, rx: 0.018, ry: 0.16, rz: -0.07, s: 0.94, order: 9 },
+            { x: -1.68, y: -1.28, z: 0.08, rx: -0.012, ry: -0.13, rz: 0.025, s: 0.94, order: 9 },
+            { x: 1.68, y: -2.06, z: -0.24, rx: -0.012, ry: 0.13, rz: -0.055, s: 0.94, order: 5 }
+        ] : [
+            { x: -3.35, y: 1.62, z: -0.42, rx: 0.018, ry: -0.18, rz: 0.105, s: 1, order: 5 },
+            { x: 3.35, y: 1.52, z: 0.02, rx: 0.018, ry: 0.18, rz: -0.08, s: 1, order: 9 },
+            { x: -3.25, y: -1.5, z: 0.08, rx: -0.012, ry: -0.14, rz: 0.025, s: 1, order: 9 },
+            { x: 3.25, y: -1.62, z: -0.44, rx: -0.012, ry: 0.14, rz: -0.055, s: 1, order: 5 }
+        ];
+
+        cardMeshes.forEach(mesh => {
+            const anchor = anchors[mesh.userData.index];
+            mesh.geometry.dispose();
+            mesh.geometry = new THREE.PlaneGeometry(cardWidth, cardHeight, 10, 4);
+            mesh.position.set(anchor.x, anchor.y, anchor.z);
+            mesh.rotation.set(anchor.rx, anchor.ry, anchor.rz);
+            mesh.scale.set(anchor.s, anchor.s, 1);
+            mesh.material.opacity = 0.96;
+            mesh.renderOrder = anchor.order;
+        });
+    };
+
+    mediaItems.forEach((item, index) => {
+        const material = new THREE.MeshStandardMaterial({
+            map: drawCard(item),
+            transparent: true,
+            roughness: 0.5,
+            metalness: 0.02,
+            side: THREE.DoubleSide
+        });
+
+        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 10, 4), material);
+        mesh.userData = { index, url: item.url };
+        scene.add(mesh);
+        cardMeshes.push(mesh);
+
+        const image = new Image();
+        image.onload = () => {
+            material.map?.dispose();
+            material.map = drawCard(item, image);
+            material.needsUpdate = true;
+        };
+        image.src = item.src;
+    });
+
+    const getAnchorAt = value => {
+        const count = anchors.length;
+        const wrapped = ((value % count) + count) % count;
+        const base = Math.floor(wrapped);
+        const next = (base + 1) % count;
+        const amount = ease(wrapped - base);
+        const a = anchors[base];
+        const b = anchors[next];
+
+        return {
+            x: lerp(a.x, b.x, amount),
+            y: lerp(a.y, b.y, amount),
+            z: lerp(a.z, b.z, amount),
+            rx: lerp(a.rx, b.rx, amount),
+            ry: lerp(a.ry, b.ry, amount),
+            rz: lerp(a.rz, b.rz, amount),
+            s: lerp(a.s, b.s, amount),
+            order: amount < 0.5 ? a.order : b.order
+        };
+    };
+
+    const updateHover = event => {
+        const rect = container.getBoundingClientRect();
+        const clientX = event.clientX;
+        const clientY = event.clientY;
+        if (clientX === undefined || clientY === undefined) return;
+
+        pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointer, camera);
+        const intersects = raycaster.intersectObjects(cardMeshes);
+        hoveredMesh = intersects.length ? intersects[0].object : null;
+        container.style.cursor = hoveredMesh ? 'pointer' : 'default';
+    };
+
+    const onClick = () => {
+        if (hoveredMesh?.userData.url) {
+            window.open(hoveredMesh.userData.url, '_blank', 'noopener,noreferrer');
+        }
+    };
+
+    container.addEventListener('mousemove', updateHover);
+    container.addEventListener('click', onClick);
+    container.addEventListener('mouseleave', () => {
+        hoveredMesh = null;
+        container.style.cursor = 'default';
+    });
+    window.addEventListener('resize', updateLayout);
+
+    updateLayout();
+
+    const animate = time => {
+        requestAnimationFrame(animate);
+
+        const targetReveal = section?.classList.contains('is-index-active-section') ? 1 : 0;
+        revealProgress += (targetReveal - revealProgress) * 0.035;
+        const revealDirection = document.body.classList.contains('is-scrolling-up') ? 1 : -1;
+
+        cardMeshes.forEach((mesh, index) => {
+            const anchor = getAnchorAt(index);
+            const hoverScale = mesh === hoveredMesh ? 0.07 : 0;
+            const drift = time * 0.00045 + index * 1.35;
+            const floatY = Math.sin(drift) * 0.035;
+            const floatX = Math.cos(drift * 0.8) * 0.015;
+            const floatRot = Math.sin(drift * 0.7) * 0.006;
+            const targetPosition = new THREE.Vector3(anchor.x + floatX, anchor.y + floatY + revealDirection * (1 - revealProgress) * 0.52, anchor.z);
+            const targetScale = new THREE.Vector3(anchor.s + hoverScale, anchor.s + hoverScale, 1);
+
+            mesh.position.lerp(targetPosition, 0.12);
+            mesh.scale.lerp(targetScale, 0.12);
+            mesh.rotation.x += (anchor.rx - mesh.rotation.x) * 0.12;
+            mesh.rotation.y += (anchor.ry - mesh.rotation.y) * 0.12;
+            mesh.rotation.z += (anchor.rz + floatRot - mesh.rotation.z) * 0.12;
+            mesh.material.opacity += ((0.96 * revealProgress) - mesh.material.opacity) * 0.1;
+            mesh.visible = revealProgress > 0.01;
+            mesh.renderOrder = anchor.order;
+        });
+
+        renderer.render(scene, camera);
+    };
+
+    requestAnimationFrame(animate);
 }
 
 function initThreeSlider() {
@@ -967,6 +1451,11 @@ function initThreeSlider() {
         { src: 'images/media/media4.jpg', caption: 'メディア掲載 4' }
     ];
     const itemsData = container.id === 'three-slider-container' ? mediaItemsData : defaultItemsData;
+
+    if (container.id === 'three-slider-container') {
+        initThreeMediaCards(container, section, itemsData);
+        return;
+    }
 
     const scene = new THREE.Scene();
 
