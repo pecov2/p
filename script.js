@@ -373,6 +373,14 @@ const setLang = lang => {
     document.querySelectorAll('[data-ja],[data-en]').forEach(el => {
         const content = el.getAttribute(`data-${lang}`);
         if (content) {
+            if (el.matches('.menu-container .section-title, .about-inner .section-title')) {
+                const label = document.createElement('span');
+                label.className = 'section-title-text';
+                label.textContent = content;
+                el.replaceChildren(label);
+                return;
+            }
+
             // HTMLタグが含まれている場合はinnerHTMLを使用
             if (content.includes('<')) {
                 el.innerHTML = content;
@@ -420,9 +428,15 @@ function initScrollVelocityInertia() {
         '.section-title',
         '.menu-intro p',
         '.menu-item-content h3',
+        '.menu-item-description',
+        '.menu-item-tax',
+        '.menu-item-time',
+        '.menu-note p',
         '.menu-item-price',
         '.menu-badge',
         '.info h3',
+        '.info p',
+        '.about-content .info p',
         '.hero-reservation-link',
         '.reservation-banner',
         '.nav-links a',
@@ -840,6 +854,11 @@ function initThreeMenuSlider() {
     applyMenuLayout();
 
     const getX = event => (event.touches ? event.touches[0].clientX : event.clientX);
+    const snapToNearestMenuCard = () => {
+        if (!cardGap) return;
+        const nearestIndex = Math.round(targetOffset / cardGap);
+        targetOffset = Math.max(0, Math.min(maxOffset, nearestIndex * cardGap));
+    };
 
     const onPointerDown = event => {
         isDragging = true;
@@ -862,6 +881,7 @@ function initThreeMenuSlider() {
         if (!isDragging) return;
         isDragging = false;
         targetOffset = Math.max(0, Math.min(maxOffset, targetOffset - dragVelocity * 9));
+        snapToNearestMenuCard();
     };
 
     container.addEventListener('mousedown', onPointerDown);
@@ -876,12 +896,14 @@ function initThreeMenuSlider() {
         camera.updateProjectionMatrix();
         renderer.setSize(container.clientWidth, container.clientHeight);
         applyMenuLayout();
+        snapToNearestMenuCard();
     });
 
     function animateMenu() {
         requestAnimationFrame(animateMenu);
 
-        currentOffset += (targetOffset - currentOffset) * 0.09;
+        const offsetEase = isDragging ? 0.16 : 0.055;
+        currentOffset += (targetOffset - currentOffset) * offsetEase;
 
         cardMeshes.forEach((mesh, index) => {
             const x = index * cardGap - currentOffset;
@@ -890,10 +912,18 @@ function initThreeMenuSlider() {
             const z = -distanceFromCenter * 0.42 + depth * 0.8;
             const y = depth * 0.08;
             const scale = 0.86 + depth * 0.12;
+            const targetPosition = new THREE.Vector3(x, y, z);
+            const targetScale = new THREE.Vector3(scale, scale, 1);
 
-            mesh.position.set(x, y, z);
+            if (!mesh.userData.hasMenuPosition) {
+                mesh.position.copy(targetPosition);
+                mesh.scale.copy(targetScale);
+                mesh.userData.hasMenuPosition = true;
+            } else {
+                mesh.position.lerp(targetPosition, 0.14);
+                mesh.scale.lerp(targetScale, 0.12);
+            }
             mesh.rotation.set(0, 0, 0);
-            mesh.scale.setScalar(scale);
             mesh.material.opacity = 1;
         });
 
@@ -912,7 +942,7 @@ function initThreeSlider() {
     const section = container.closest('.image-slider-section');
     if (section) section.classList.add('has-three');
 
-    const itemsData = [
+    const defaultItemsData = [
         { src: 'images/1.jpg', caption: '炭火で仕上げた季節魚' },
         { src: 'images/2.jpg', caption: '季節野菜のひと皿' },
         { src: 'images/3.jpg', caption: '余韻を楽しむ甘味' },
@@ -925,6 +955,18 @@ function initThreeSlider() {
         { src: 'images/10.jpg', caption: '締めくくりのひと皿' },
         { src: 'images/11.jpg', caption: '静けさに包まれる食卓' }
     ];
+    const mediaItemsData = [
+        { src: 'images/media/media1.jpg', caption: 'メディア掲載 1' },
+        {
+            src: 'images/media/media2.jpg',
+            caption: 'Audi JAPAN様',
+            selectedDescription: 'Audi JAPAN様に取材していただきました。',
+            selectedUrl: 'https://www.audi-sales.co.jp/special_content/gourmet_a3sb/'
+        },
+        { src: 'images/media/media3.jpg', caption: 'メディア掲載 3' },
+        { src: 'images/media/media4.jpg', caption: 'メディア掲載 4' }
+    ];
+    const itemsData = container.id === 'three-slider-container' ? mediaItemsData : defaultItemsData;
 
     const scene = new THREE.Scene();
 
@@ -936,6 +978,18 @@ function initThreeSlider() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
+
+    const selectedCaption = document.createElement('div');
+    selectedCaption.className = 'three-slider-selected-caption';
+    selectedCaption.setAttribute('aria-hidden', 'true');
+    container.appendChild(selectedCaption);
+    selectedCaption.addEventListener('pointerdown', event => event.stopPropagation());
+    selectedCaption.addEventListener('pointerup', event => event.stopPropagation());
+    selectedCaption.addEventListener('mousedown', event => event.stopPropagation());
+    selectedCaption.addEventListener('mouseup', event => event.stopPropagation());
+    selectedCaption.addEventListener('touchstart', event => event.stopPropagation(), { passive: true });
+    selectedCaption.addEventListener('touchend', event => event.stopPropagation());
+    selectedCaption.addEventListener('click', event => event.stopPropagation());
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     scene.add(ambientLight);
@@ -954,8 +1008,8 @@ function initThreeSlider() {
         const isMobile = width <= 768;
 
         return {
-            radius: isMobile ? 5.6 : 9.4,
-            cardWidth: isMobile ? 2.8 : 4.5
+            radius: isMobile ? 5.6 : 6.6,
+            cardWidth: isMobile ? 2.8 : 3.25
         };
     };
 
@@ -969,12 +1023,18 @@ function initThreeSlider() {
             mesh.geometry.dispose();
             mesh.geometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
         });
+
+        if (selectedDisplayMesh) {
+            selectedDisplayMesh.geometry.dispose();
+            selectedDisplayMesh.geometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
+        }
     };
 
     const cardsGroup = new THREE.Group();
     scene.add(cardsGroup);
 
     const cardMeshes = [];
+    const selectedTextures = [];
 
     itemsData.forEach((item, index) => {
         const canvas = document.createElement('canvas');
@@ -1014,7 +1074,13 @@ function initThreeSlider() {
         });
 
         const mesh = new THREE.Mesh(geometry, material);
-        mesh.userData = { index, caption: item.caption };
+        mesh.userData = {
+            index,
+            caption: item.caption,
+            src: item.src,
+            selectedDescription: item.selectedDescription,
+            selectedUrl: item.selectedUrl
+        };
         cardsGroup.add(mesh);
         cardMeshes.push(mesh);
 
@@ -1022,6 +1088,32 @@ function initThreeSlider() {
         img.crossOrigin = 'anonymous';
         img.src = item.src;
         img.onload = () => {
+            const selectedCanvas = document.createElement('canvas');
+            selectedCanvas.width = 512;
+            selectedCanvas.height = 512;
+            const selectedCtx = selectedCanvas.getContext('2d');
+            selectedCtx.beginPath();
+            if (typeof selectedCtx.roundRect === 'function') {
+                selectedCtx.roundRect(0, 0, 512, 512, 40);
+            } else {
+                const selectedRadius = 40;
+                selectedCtx.moveTo(selectedRadius, 0);
+                selectedCtx.lineTo(512 - selectedRadius, 0);
+                selectedCtx.quadraticCurveTo(512, 0, 512, selectedRadius);
+                selectedCtx.lineTo(512, 512 - selectedRadius);
+                selectedCtx.quadraticCurveTo(512, 512, 512 - selectedRadius, 512);
+                selectedCtx.lineTo(selectedRadius, 512);
+                selectedCtx.quadraticCurveTo(0, 512, 0, 512 - selectedRadius);
+                selectedCtx.lineTo(0, selectedRadius);
+                selectedCtx.quadraticCurveTo(0, 0, selectedRadius, 0);
+                selectedCtx.closePath();
+            }
+            selectedCtx.clip();
+            selectedCtx.drawImage(img, 0, 0, 512, 512);
+            const selectedTexture = new THREE.CanvasTexture(selectedCanvas);
+            selectedTexture.needsUpdate = true;
+            selectedTextures[index] = selectedTexture;
+
             ctx.drawImage(img, 0, 0, 512, 512);
 
             const grad = ctx.createLinearGradient(0, 340, 0, 512);
@@ -1040,6 +1132,20 @@ function initThreeSlider() {
         };
     });
 
+    let selectedDisplayMesh = null;
+    const selectedDisplayMaterial = new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: 0,
+        side: THREE.DoubleSide,
+        depthTest: false
+    });
+    selectedDisplayMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), selectedDisplayMaterial);
+    selectedDisplayMesh.visible = false;
+    selectedDisplayMesh.renderOrder = 20;
+    selectedDisplayMesh.position.set(0, 0, 1.4);
+    scene.add(selectedDisplayMesh);
+
+    const angleStep = (Math.PI * 2) / count;
     const initialRotationOffset = Math.PI / count;
     let currentRotation = initialRotationOffset;
     let targetRotation = initialRotationOffset;
@@ -1049,11 +1155,93 @@ function initThreeSlider() {
     let dragVelocity = 0;
     let lastX = 0;
     let hoveredMesh = null;
+    let dragDistance = 0;
+    let selectedIndex = null;
+    let returningIndex = null;
+    let selectedDisplayTarget = null;
+    const selectedDisplayEase = 0.045;
 
     applyCarouselLayout();
 
     const getX = (e) => (e.touches ? e.touches[0].clientX : e.clientX);
     const getY = (e) => (e.touches ? e.touches[0].clientY : e.clientY);
+    const normalizeAngle = angle => {
+        const turn = Math.PI * 2;
+        return ((angle + Math.PI) % turn + turn) % turn - Math.PI;
+    };
+    const lerpAngle = (current, target, amount) => {
+        return current + normalizeAngle(target - current) * amount;
+    };
+
+    const selectMesh = index => {
+        const sourceMesh = cardMeshes[index];
+        selectedIndex = index;
+        returningIndex = null;
+        selectedDisplayTarget = 'center';
+        selectedCaption.replaceChildren();
+        if (sourceMesh.userData.selectedDescription) {
+            const description = document.createElement('p');
+            description.textContent = sourceMesh.userData.selectedDescription;
+            selectedCaption.appendChild(description);
+        } else {
+            selectedCaption.textContent = sourceMesh.userData.caption || '';
+        }
+        if (sourceMesh.userData.selectedUrl) {
+            const link = document.createElement('a');
+            link.href = sourceMesh.userData.selectedUrl;
+            link.textContent = sourceMesh.userData.selectedUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.addEventListener('pointerdown', event => event.stopPropagation());
+            link.addEventListener('pointerup', event => event.stopPropagation());
+            link.addEventListener('click', event => event.stopPropagation());
+            selectedCaption.appendChild(link);
+        }
+        selectedCaption.classList.add('is-visible');
+        selectedCaption.setAttribute('aria-hidden', 'false');
+        selectedDisplayMaterial.map = selectedTextures[index] || sourceMesh.material.map;
+        selectedDisplayMaterial.opacity = sourceMesh.material.opacity;
+        selectedDisplayMaterial.needsUpdate = true;
+        selectedDisplayMesh.visible = true;
+        selectedDisplayMesh.position.copy(sourceMesh.position);
+        selectedDisplayMesh.rotation.copy(sourceMesh.rotation);
+        selectedDisplayMesh.rotation.y = normalizeAngle(selectedDisplayMesh.rotation.y);
+        selectedDisplayMesh.scale.copy(sourceMesh.scale);
+    };
+
+    const clearSelectedMesh = () => {
+        if (selectedIndex === null) return;
+        returningIndex = selectedIndex;
+        selectedIndex = null;
+        selectedDisplayTarget = 'carousel';
+        selectedCaption.classList.remove('is-visible');
+        selectedCaption.setAttribute('aria-hidden', 'true');
+    };
+
+    const updateHoveredMesh = (e) => {
+        const rect = container.getBoundingClientRect();
+        const clientX = getX(e);
+        const clientY = getY(e);
+        if (clientX === undefined || clientY === undefined) return;
+
+        const mouseX = ((clientX - rect.left) / container.clientWidth) * 2 - 1;
+        const mouseY = -((clientY - rect.top) / container.clientHeight) * 2 + 1;
+
+        const hoverableMeshes = cardMeshes.filter(mesh =>
+            mesh.userData.isHoverable !== false && mesh.userData.index !== selectedIndex
+        );
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
+        const intersects = raycaster.intersectObjects(hoverableMeshes);
+
+        if (intersects.length > 0) {
+            hoveredMesh = intersects[0].object;
+            container.style.cursor = isDragging ? 'grabbing' : 'pointer';
+        } else {
+            hoveredMesh = null;
+            container.style.cursor = isDragging ? 'grabbing' : 'grab';
+        }
+    };
 
     const onPointerDown = (e) => {
         isDragging = true;
@@ -1061,6 +1249,8 @@ function initThreeSlider() {
         lastX = startX;
         previousRotation = targetRotation;
         dragVelocity = 0;
+        dragDistance = 0;
+        updateHoveredMesh(e);
     };
 
     const onPointerMove = (e) => {
@@ -1069,37 +1259,27 @@ function initThreeSlider() {
             if (x !== undefined) {
                 const deltaX = x - startX;
                 dragVelocity = (x - lastX) * 0.0025;
+                dragDistance = Math.max(dragDistance, Math.abs(deltaX));
+                if (dragDistance >= 8) {
+                    clearSelectedMesh();
+                }
                 lastX = x;
                 targetRotation = previousRotation + deltaX * 0.0025;
             }
         }
 
-        const rect = container.getBoundingClientRect();
-        const clientX = getX(e);
-        const clientY = getY(e);
-        if (clientX !== undefined && clientY !== undefined) {
-            const mouseX = ((clientX - rect.left) / container.clientWidth) * 2 - 1;
-            const mouseY = -((clientY - rect.top) / container.clientHeight) * 2 + 1;
-
-            const hoverableMeshes = cardMeshes.filter(mesh => mesh.userData.isHoverable !== false);
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
-            const intersects = raycaster.intersectObjects(hoverableMeshes);
-
-            if (intersects.length > 0) {
-                hoveredMesh = intersects[0].object;
-                container.style.cursor = isDragging ? 'grabbing' : 'pointer';
-            } else {
-                hoveredMesh = null;
-                container.style.cursor = isDragging ? 'grabbing' : 'grab';
-            }
-        }
+        updateHoveredMesh(e);
     };
 
     const onPointerUp = () => {
         if (isDragging) {
             isDragging = false;
             targetRotation += dragVelocity * 8;
+            if (dragDistance < 8 && hoveredMesh) {
+                selectMesh(hoveredMesh.userData.index);
+            } else if (dragDistance < 8) {
+                clearSelectedMesh();
+            }
         }
     };
 
@@ -1130,7 +1310,6 @@ function initThreeSlider() {
 
         currentRotation += (targetRotation - currentRotation) * 0.08;
 
-        const angleStep = (Math.PI * 2) / count;
         cardMeshes.forEach((mesh, index) => {
             const angle = index * angleStep + currentRotation;
 
@@ -1143,21 +1322,62 @@ function initThreeSlider() {
 
             const normZ = (z + radius) / radius;
             const isHoverable = normZ > 0.12;
+            const isSelected = index === selectedIndex || index === returningIndex;
             mesh.userData.isHoverable = isHoverable;
             if (!isHoverable && mesh === hoveredMesh) {
                 hoveredMesh = null;
             }
 
-            const targetScale = mesh === hoveredMesh && isHoverable ? 1.12 : 0.82 + normZ * 0.22;
+            const baseScale = 0.82 + normZ * 0.22;
+            const hoverBoost = mesh === hoveredMesh && isHoverable ? 0.1 : 0;
+            const targetScale = baseScale + hoverBoost;
             const rearCenterAmount = Math.max(0, (-Math.cos(angle) - 0.48) / 0.52);
             const centerAmount = Math.max(0, 1 - Math.abs(Math.sin(angle)) / 2.4);
             const poroniOcclusionFade = Math.min(1, rearCenterAmount * centerAmount);
             const baseOpacity = Math.max(0.35, Math.min(1.0, 0.4 + normZ * 0.6));
 
+            mesh.visible = !isSelected;
+            mesh.renderOrder = 0;
             mesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, 1), 0.1);
             mesh.material.opacity = baseOpacity * (1 - poroniOcclusionFade);
             mesh.material.transparent = true;
         });
+
+        if (selectedDisplayMesh) {
+            const selectedScale = container.clientWidth <= 768 ? 1.42 : 1.34;
+            const hasSelection = selectedIndex !== null;
+            const returnMesh = returningIndex === null ? null : cardMeshes[returningIndex];
+            const targetPosition = hasSelection
+                ? new THREE.Vector3(0, 0, 1.4)
+                : returnMesh?.position.clone() || selectedDisplayMesh.position.clone();
+            const targetRotation = hasSelection
+                ? new THREE.Euler(0, 0, 0)
+                : returnMesh?.rotation || selectedDisplayMesh.rotation;
+            const targetScale = hasSelection
+                ? new THREE.Vector3(selectedScale, selectedScale, 1)
+                : returnMesh?.scale.clone() || new THREE.Vector3(1, 1, 1);
+            const targetOpacity = hasSelection
+                ? 1
+                : returnMesh?.material.opacity || 0;
+
+            selectedDisplayMesh.position.lerp(targetPosition, selectedDisplayEase);
+            selectedDisplayMesh.rotation.x = lerpAngle(selectedDisplayMesh.rotation.x, targetRotation.x, selectedDisplayEase);
+            selectedDisplayMesh.rotation.y = lerpAngle(selectedDisplayMesh.rotation.y, targetRotation.y, selectedDisplayEase);
+            selectedDisplayMesh.rotation.z = lerpAngle(selectedDisplayMesh.rotation.z, targetRotation.z, selectedDisplayEase);
+            selectedDisplayMesh.scale.lerp(targetScale, selectedDisplayEase);
+            selectedDisplayMaterial.opacity += (targetOpacity - selectedDisplayMaterial.opacity) * selectedDisplayEase;
+
+            if (
+                returnMesh &&
+                selectedDisplayMesh.position.distanceTo(returnMesh.position) < 0.05 &&
+                Math.abs(selectedDisplayMaterial.opacity - targetOpacity) < 0.04
+            ) {
+                returningIndex = null;
+                selectedDisplayTarget = null;
+            }
+
+            selectedDisplayMesh.visible = selectedDisplayMaterial.opacity > 0.01 || targetOpacity > 0;
+        }
 
         renderer.render(scene, camera);
     }

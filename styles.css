@@ -504,7 +504,7 @@ body.night .nav-social a:hover {
     color: rgba(95, 50, 20, 0.72);
 }
 
-.menu-item-price {
+.menu-item .menu-item-price {
     font-size: clamp(1rem, 2vw, 1.2rem);
     font-weight: 700;
     margin-bottom: 1.5rem;
@@ -1037,8 +1037,8 @@ footer {
     .mobile-menu-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(38, 29, 24, 0.38);
-        backdrop-filter: blur(2px);
+        background: transparent;
+        backdrop-filter: none;
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
@@ -1532,6 +1532,8 @@ footer {
 
 .media-heading-container {
     padding-top: clamp(3rem, 6vw, 5rem);
+    position: relative;
+    z-index: 16;
 }
 
 .media-section-title {
@@ -1546,16 +1548,20 @@ footer {
 
 .image-slider-section-top {
     background: transparent;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
     overflow: visible;
     z-index: 20;
 }
 
 .image-slider-section-top .three-slider-container {
-    transform: translateY(11rem);
+    transform: none;
 }
 
 .image-slider-section-top + .hero {
-    height: clamp(12rem, 22vw, 20rem);
+    height: 0;
     min-height: 0;
     padding: 0;
     background: transparent;
@@ -1618,6 +1624,61 @@ footer {
     outline: none;
     position: relative;
     z-index: 14;
+}
+
+.three-slider-selected-caption {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + 13.5rem);
+    z-index: 24;
+    max-width: min(34rem, 82vw);
+    padding: 0.75rem 1.2rem;
+    color: #211b17;
+    background: rgba(250, 248, 245, 0.86);
+    border: 1px solid rgba(95, 50, 20, 0.18);
+    border-radius: 8px;
+    box-shadow: 0 14px 34px rgba(40, 28, 20, 0.12);
+    font-size: clamp(0.88rem, 1.3vw, 1rem);
+    line-height: 1.6;
+    letter-spacing: 0.08em;
+    text-align: center;
+    overflow-wrap: anywhere;
+    opacity: 0;
+    transform: translate(-50%, 0.8rem);
+    pointer-events: none;
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.three-slider-selected-caption.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    pointer-events: auto;
+}
+
+.three-slider-selected-caption p {
+    margin: 0 0 0.35rem;
+}
+
+.three-slider-selected-caption a {
+    display: inline-block;
+    padding: 0.15rem 0;
+    color: #49250E;
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+    pointer-events: auto;
+}
+
+.three-slider-selected-caption a:hover {
+    color: #7a4218;
+}
+
+@media (max-width: 768px) {
+    .three-slider-selected-caption {
+        top: calc(50% + 11.5rem);
+        max-width: min(21rem, 86vw);
+        padding: 0.65rem 0.95rem;
+        font-size: 0.86rem;
+    }
 }
 
 .menu-section,
@@ -1941,6 +2002,11 @@ a[href^="tel"] {
     content: none;
 }
 
+.menu-section .menu-container {
+    position: relative;
+    z-index: 2;
+}
+
 .menu-container .section-title,
 .about-inner .section-title {
     display: flex;
@@ -1951,6 +2017,30 @@ a[href^="tel"] {
     text-align: left;
     font-size: clamp(2rem, 3.4vw, 3rem);
     letter-spacing: 0.2em;
+}
+
+.menu-container .section-title {
+    width: fit-content;
+    max-width: 100%;
+    font-weight: 850;
+}
+
+.menu-container .section-title .section-title-text,
+.about-inner .section-title .section-title-text {
+    position: relative;
+    z-index: 1;
+    text-shadow:
+        0 0 2px rgba(255, 255, 255, 0.9),
+        0 0 5px rgba(255, 255, 255, 0.45);
+}
+
+.menu-container .section-title .section-title-text::before,
+.about-inner .section-title .section-title-text::before {
+    content: none;
+}
+
+.menu-section > .menu-container > .section-title {
+    margin-left: 0;
 }
 
 .menu-container .section-title::before,
@@ -1967,15 +2057,28 @@ a[href^="tel"] {
 }
 
 .menu-intro {
-    max-width: 560px;
+    width: fit-content;
+    max-width: min(88%, 560px);
     margin: 0 0 clamp(2.5rem, 5vw, 4rem) 4.7rem;
+    padding: 0.32rem 0.65rem;
+    position: relative;
 }
 
 .menu-intro p {
-    color: rgba(36, 25, 21, 0.68);
+    position: relative;
+    z-index: 1;
+    color: rgba(36, 25, 21, 0.84);
     font-size: clamp(0.9rem, 1.1vw, 1rem);
+    font-weight: 520;
     letter-spacing: 0.08em;
     line-height: 2;
+    text-shadow:
+        0 0 1px rgba(255, 255, 255, 0.9),
+        0 0 4px rgba(255, 255, 255, 0.6);
+}
+
+.menu-intro::before {
+    content: none;
 }
 
 .menu-grid {
@@ -2054,14 +2157,14 @@ a[href^="tel"] {
 
 .menu-item p {
     margin-bottom: 0.8rem;
-    color: rgba(36, 25, 21, 0.68);
+    color: rgba(36, 25, 21, 0.84);
     font-size: clamp(0.8rem, 1.5vw, 0.95rem);
     font-weight: 400;
     letter-spacing: 0.08em;
     line-height: 1.8;
 }
 
-.menu-item-price {
+.menu-item .menu-item-price {
     position: relative;
     margin-top: 1rem;
     margin-bottom: 0.1rem;
@@ -2083,8 +2186,8 @@ a[href^="tel"] {
     background-color: #7a4218;
 }
 
-.menu-item-tax {
-    color: rgba(36, 25, 21, 0.66);
+.menu-item .menu-item-tax {
+    color: rgba(36, 25, 21, 0.8);
     font-size: 0.9rem;
 }
 
@@ -2099,11 +2202,11 @@ a[href^="tel"] {
     border-top: 1px solid rgba(95, 50, 20, 0.14);
 }
 
-.menu-item-time {
+.menu-item .menu-item-time {
     display: flex;
     align-items: flex-start;
     gap: 0.6rem;
-    color: rgba(36, 25, 21, 0.7);
+    color: rgba(36, 25, 21, 0.84);
     font-size: clamp(0.78rem, 1.2vw, 0.9rem);
 }
 
@@ -2169,7 +2272,7 @@ a[href^="tel"] {
     width: 100%;
     margin-bottom: 0;
     text-align: left;
-    color: rgba(36, 25, 21, 0.72);
+    color: rgba(36, 25, 21, 0.86);
     font-size: clamp(0.8rem, 1.2vw, 0.95rem);
     letter-spacing: 0.08em;
     line-height: 1.7;
@@ -2237,14 +2340,18 @@ a[href^="tel"] {
     transform-style: preserve-3d;
 }
 
-.menu-container .section-title,
 .about-inner .section-title {
     text-shadow: 0 18px 28px rgba(40, 28, 20, 0.08);
 }
 
+.menu-container .section-title {
+    text-shadow:
+        0 1px 12px rgba(255, 255, 255, 0.45),
+        0 12px 22px rgba(40, 28, 20, 0.06);
+}
+
 .menu-intro {
     position: relative;
-    padding: 0;
     background: transparent;
     border: none;
     border-radius: 0;
@@ -2362,6 +2469,67 @@ a[href^="tel"] {
 .about-content .info h3,
 .about-content .info p {
     transform: none;
+}
+
+.about-content .info h3,
+.about-content .info p,
+.footer-info p,
+.footer-hours p,
+.footer-bottom p {
+    position: relative;
+    z-index: 1;
+    width: fit-content;
+    text-shadow:
+        0 0 1px rgba(255, 255, 255, 0.9),
+        0 0 4px rgba(255, 255, 255, 0.58);
+    isolation: isolate;
+}
+
+.about-content .info p,
+.footer-info p,
+.footer-hours p {
+    color: rgba(36, 25, 21, 0.84);
+}
+
+.footer-bottom p {
+    color: rgba(36, 25, 21, 0.74);
+}
+
+.section-title-text,
+.menu-intro p .scroll-velocity-inner,
+.menu-item-content h3 .scroll-velocity-inner,
+.menu-item-description .scroll-velocity-inner,
+.menu-item .menu-item-tax .scroll-velocity-inner,
+.menu-item .menu-item-time .scroll-velocity-inner,
+.menu-note p .scroll-velocity-inner,
+.menu-item .menu-item-price .scroll-velocity-inner,
+.menu-badge .scroll-velocity-inner,
+.about-content .info h3 .scroll-velocity-inner,
+.about-content .info p .scroll-velocity-inner,
+.footer-info p .scroll-velocity-inner,
+.footer-hours p .scroll-velocity-inner,
+.footer-bottom p .scroll-velocity-inner {
+    display: inline;
+    text-shadow:
+        0 0 1px rgba(255, 255, 255, 0.9),
+        0 0 4px rgba(255, 255, 255, 0.6),
+        0 0 10px rgba(250, 247, 241, 0.54);
+    filter: drop-shadow(0 0 8px rgba(250, 247, 241, 0.48));
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.about-content .info h3 .scroll-velocity-inner,
+.about-content .info p .scroll-velocity-inner {
+    transform: none;
+}
+
+.about-content .info h3::before {
+    content: none;
+}
+
+.footer-bottom p {
+    margin-inline: auto;
 }
 
 .map-container {
@@ -2608,6 +2776,20 @@ a[href^="tel"] {
 .footer-hours .scroll-velocity-inner,
 .footer-bottom .scroll-velocity-inner {
     display: block;
+}
+
+.menu-intro p .scroll-velocity-inner,
+.menu-item-content h3 .scroll-velocity-inner,
+.menu-item-description .scroll-velocity-inner,
+.menu-item .menu-item-tax .scroll-velocity-inner,
+.menu-item .menu-item-time .scroll-velocity-inner,
+.menu-note p .scroll-velocity-inner,
+.menu-item .menu-item-price .scroll-velocity-inner,
+.menu-badge .scroll-velocity-inner,
+.footer-info p .scroll-velocity-inner,
+.footer-hours p .scroll-velocity-inner,
+.footer-bottom p .scroll-velocity-inner {
+    display: inline;
 }
 
 @media (prefers-reduced-motion: reduce) {
