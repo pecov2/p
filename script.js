@@ -577,6 +577,41 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
 // 初期化
 setLang(document.body.dataset.lang || 'ja');
 
+function setMenuTheme(mode) {
+    const isDark = mode === 'dark';
+    setMenuThemeProgress(isDark ? 1 : 0);
+    document.body.classList.toggle('dark', isDark);
+    document.body.classList.toggle('night', isDark);
+    document.body.classList.toggle('day', !isDark);
+    document.body.classList.remove('evening');
+}
+
+function setMenuThemeProgress(progress) {
+    const value = Math.max(0, Math.min(1, progress));
+    const isBlending = value > 0.001 && value < 0.999;
+
+    document.body.style.setProperty('--menu-dark-progress', value.toFixed(3));
+    document.body.style.setProperty('--poroni-tree-brightness', (1 - value * 0.35).toFixed(3));
+    document.body.style.setProperty('--poroni-tree-saturation', (1 - value * 0.25).toFixed(3));
+    document.body.style.setProperty('--poroni-ground-blur', `${(8 + value * 6).toFixed(1)}px`);
+    document.body.style.setProperty('--poroni-ground-opacity', (0.78 + value * 0.22).toFixed(3));
+    document.body.classList.toggle('theme-blending', isBlending);
+
+    if (isBlending) {
+        document.body.classList.remove('day', 'dark', 'night', 'evening');
+    } else if (value >= 0.999) {
+        document.body.classList.add('dark', 'night');
+        document.body.classList.remove('day', 'evening');
+    } else {
+        document.body.classList.add('day');
+        document.body.classList.remove('dark', 'night', 'evening');
+    }
+}
+
+function getMenuItemTheme(item) {
+    return item?.dataset.themeMode || 'day';
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     initMobileReservationToggle();
     initThreeMenuSlider();
@@ -684,6 +719,7 @@ function initMenuSlider() {
     items.forEach((item, index) => {
         item.classList.toggle('is-active', index === 0);
     });
+    setMenuTheme(getMenuItemTheme(items[0]));
 
     const controls = document.createElement('div');
     controls.className = 'menu-slider-controls';
@@ -711,6 +747,7 @@ function initMenuSlider() {
         items.forEach((item, itemIndex) => {
             item.classList.toggle('is-active', itemIndex === currentIndex);
         });
+        setMenuTheme(getMenuItemTheme(activeItem));
     };
 
     const restartAuto = () => {
@@ -728,6 +765,13 @@ function initMenuSlider() {
     controls.querySelector('.menu-slider-next').addEventListener('click', () => {
         setActive(currentIndex + 1);
         restartAuto();
+    });
+
+    items.forEach((item, index) => {
+        item.addEventListener('click', () => {
+            setActive(index);
+            restartAuto();
+        });
     });
 
     track.addEventListener('scroll', () => {
@@ -749,6 +793,7 @@ function initMenuSlider() {
         items.forEach((item, index) => {
             item.classList.toggle('is-active', index === currentIndex);
         });
+        setMenuTheme(getMenuItemTheme(items[currentIndex]));
     }, { passive: true });
 
     track.addEventListener('pointerdown', () => window.clearInterval(autoTimer));
@@ -781,9 +826,11 @@ function initThreeMenuSlider() {
             price: item.querySelector('.menu-item-price')?.textContent.trim() || '',
             tax: item.querySelector('.menu-item-tax')?.textContent.trim() || '',
             description: item.querySelector('.menu-item-description')?.textContent.trim() || '',
-            times: lines
+            times: lines,
+            themeMode: getMenuItemTheme(item)
         };
     });
+    setMenuTheme(itemsData[0]?.themeMode || 'day');
 
     const scene = new THREE.Scene();
     const getAspect = () => container.clientWidth / container.clientHeight;
@@ -909,6 +956,7 @@ function initThreeMenuSlider() {
         const scale2d = canvas.width / baseWidth;
 
         const drawCard = image => {
+            const isDarkCard = item.themeMode === 'dark';
             ctx.setTransform(scale2d, 0, 0, scale2d, 0, 0);
             ctx.clearRect(0, 0, baseWidth, baseHeight);
             ctx.imageSmoothingEnabled = true;
@@ -917,65 +965,65 @@ function initThreeMenuSlider() {
             drawRoundedRect(ctx, 0, 0, baseWidth, baseHeight, 34);
             ctx.clip();
 
-            ctx.fillStyle = '#fffaf3';
+            ctx.fillStyle = isDarkCard ? '#17110d' : '#fffaf3';
             ctx.fillRect(0, 0, baseWidth, baseHeight);
 
             if (image) {
                 ctx.drawImage(image, 0, 0, imageWidth, baseHeight);
                 const imageShade = ctx.createLinearGradient(0, 0, imageWidth, 0);
-                imageShade.addColorStop(0, 'rgba(18, 10, 5, 0.04)');
-                imageShade.addColorStop(1, 'rgba(18, 10, 5, 0.18)');
+                imageShade.addColorStop(0, isDarkCard ? 'rgba(0, 0, 0, 0.12)' : 'rgba(18, 10, 5, 0.04)');
+                imageShade.addColorStop(1, isDarkCard ? 'rgba(0, 0, 0, 0.44)' : 'rgba(18, 10, 5, 0.18)');
                 ctx.fillStyle = imageShade;
                 ctx.fillRect(0, 0, imageWidth, baseHeight);
             }
 
-            ctx.fillStyle = '#211b17';
+            ctx.fillStyle = isDarkCard ? '#c59a62' : '#211b17';
             ctx.fillRect(imageWidth, 0, baseWidth - imageWidth, baseHeight);
-            ctx.fillStyle = '#fffaf3';
+            ctx.fillStyle = isDarkCard ? '#17110d' : '#fffaf3';
             ctx.fillRect(imageWidth + 16, 0, baseWidth - imageWidth - 16, baseHeight);
 
-            ctx.fillStyle = '#683612';
+            ctx.fillStyle = isDarkCard ? '#c59a62' : '#683612';
             ctx.font = '700 36px "Noto Serif JP", serif';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
 
             let y = 74;
             if (item.badge) {
-                ctx.fillStyle = '#683612';
+                ctx.fillStyle = isDarkCard ? '#c59a62' : '#683612';
                 drawRoundedRect(ctx, contentX, y, 166, 50, 4);
                 ctx.fill();
-                ctx.fillStyle = '#fff';
+                ctx.fillStyle = isDarkCard ? '#17110d' : '#fff';
                 ctx.font = '700 24px "Noto Serif JP", serif';
                 ctx.fillText(item.badge, contentX + 26, y + 12);
                 y += 78;
             }
 
-            ctx.fillStyle = '#17110d';
+            ctx.fillStyle = isDarkCard ? '#fff4df' : '#17110d';
             ctx.font = '800 58px "Noto Serif JP", serif';
             y += wrapText(ctx, item.title, contentX, y, contentMaxWidth, 68, 2) + 14;
 
-            ctx.fillStyle = '#683612';
+            ctx.fillStyle = isDarkCard ? '#d9af75' : '#683612';
             ctx.font = '600 74px "Noto Serif JP", serif';
             ctx.fillText(item.price, contentX, y);
             y += 76;
 
-            ctx.fillStyle = 'rgba(23, 17, 13, 0.84)';
+            ctx.fillStyle = isDarkCard ? 'rgba(255, 244, 223, 0.78)' : 'rgba(23, 17, 13, 0.84)';
             ctx.font = '500 31px "Noto Serif JP", serif';
             ctx.fillText(item.tax, contentX + 4, y);
             y += 64;
 
-            ctx.fillStyle = 'rgba(23, 17, 13, 0.92)';
+            ctx.fillStyle = isDarkCard ? 'rgba(255, 244, 223, 0.88)' : 'rgba(23, 17, 13, 0.92)';
             ctx.font = '500 34px "Noto Serif JP", serif';
             y += wrapText(ctx, item.description, contentX, y, contentMaxWidth, 48, 3) + 22;
 
-            ctx.strokeStyle = 'rgba(104, 54, 18, 0.26)';
+            ctx.strokeStyle = isDarkCard ? 'rgba(217, 175, 117, 0.34)' : 'rgba(104, 54, 18, 0.26)';
             ctx.beginPath();
             ctx.moveTo(contentX, y);
             ctx.lineTo(lineEndX, y);
             ctx.stroke();
             y += 26;
 
-            ctx.fillStyle = 'rgba(23, 17, 13, 0.9)';
+            ctx.fillStyle = isDarkCard ? 'rgba(255, 244, 223, 0.86)' : 'rgba(23, 17, 13, 0.9)';
             ctx.font = '500 30px "Noto Serif JP", serif';
             item.times.forEach(time => {
                 y += wrapText(ctx, time, contentX, y, contentMaxWidth, 42, 2) + 8;
@@ -1014,20 +1062,55 @@ function initThreeMenuSlider() {
     let previousOffset = 0;
     let dragVelocity = 0;
     let lastX = 0;
+    let startY = 0;
     let revealProgress = 0;
 
     applyMenuLayout();
 
-    const getX = event => (event.touches ? event.touches[0].clientX : event.clientX);
+    const getPoint = event => event.touches?.[0] || event.changedTouches?.[0] || event;
+    const getX = event => getPoint(event)?.clientX || 0;
+    const getY = event => getPoint(event)?.clientY || 0;
+    const getThemeValue = index => itemsData[index]?.themeMode === 'dark' ? 1 : 0;
+    const getThemeProgressFromOffset = offset => {
+        if (!cardGap || itemsData.length < 2) return getThemeValue(0);
+
+        const position = Math.max(0, Math.min(itemsData.length - 1, offset / cardGap));
+        const lowerIndex = Math.floor(position);
+        const upperIndex = Math.min(itemsData.length - 1, lowerIndex + 1);
+        const localProgress = position - lowerIndex;
+        const lowerValue = getThemeValue(lowerIndex);
+        const upperValue = getThemeValue(upperIndex);
+
+        return lowerValue + (upperValue - lowerValue) * localProgress;
+    };
+    const setActiveMenuCard = index => {
+        const clampedIndex = Math.max(0, Math.min(itemsData.length - 1, index));
+        targetOffset = Math.max(0, Math.min(maxOffset, clampedIndex * cardGap));
+    };
     const snapToNearestMenuCard = () => {
         if (!cardGap) return;
         const nearestIndex = Math.round(targetOffset / cardGap);
-        targetOffset = Math.max(0, Math.min(maxOffset, nearestIndex * cardGap));
+        setActiveMenuCard(nearestIndex);
+    };
+    const getTappedCardIndex = event => {
+        const rect = container.getBoundingClientRect();
+        const point = getPoint(event);
+        if (!point || !rect.width || !rect.height) return null;
+
+        const pointer = new THREE.Vector2(
+            ((point.clientX - rect.left) / rect.width) * 2 - 1,
+            -((point.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(pointer, camera);
+        const hits = raycaster.intersectObjects(cardMeshes.filter(mesh => mesh.visible));
+        return hits[0]?.object?.userData.index ?? null;
     };
 
     const onPointerDown = event => {
         isDragging = true;
         startX = getX(event);
+        startY = getY(event);
         lastX = startX;
         previousOffset = targetOffset;
         dragVelocity = 0;
@@ -1042,9 +1125,20 @@ function initThreeMenuSlider() {
         targetOffset = Math.max(0, Math.min(maxOffset, previousOffset - deltaX * 0.018));
     };
 
-    const onPointerUp = () => {
+    const onPointerUp = event => {
         if (!isDragging) return;
+        const moveX = Math.abs(getX(event) - startX);
+        const moveY = Math.abs(getY(event) - startY);
         isDragging = false;
+
+        if (moveX < 8 && moveY < 8) {
+            const tappedIndex = getTappedCardIndex(event);
+            if (tappedIndex !== null) {
+                setActiveMenuCard(tappedIndex);
+                return;
+            }
+        }
+
         targetOffset = Math.max(0, Math.min(maxOffset, targetOffset - dragVelocity * 9));
         snapToNearestMenuCard();
     };
@@ -1073,6 +1167,7 @@ function initThreeMenuSlider() {
 
         const offsetEase = isDragging ? 0.16 : 0.055;
         currentOffset += (targetOffset - currentOffset) * offsetEase;
+        setMenuThemeProgress(getThemeProgressFromOffset(currentOffset));
 
         cardMeshes.forEach((mesh, index) => {
             const x = index * cardGap - currentOffset;
